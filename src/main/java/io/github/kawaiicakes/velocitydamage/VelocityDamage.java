@@ -82,6 +82,7 @@ public class VelocityDamage
     }
 
     // TODO: configurable max damage, min damage, velocity multiplier, etc.
+    // FIXME: INSANE damage multiplier as entity positions approach each other.
     private static float calculateNewDamage(LivingEntity attacker, LivingEntity target, float originalDamage) {
         Vec3 attackerVelocity = returnVelocity(attacker);
         Vec3 targetVelocity = returnVelocity(target);
@@ -120,7 +121,8 @@ public class VelocityDamage
 
         LOGGER.debug("The attacker and target are approaching each other at " + approachVelocity + "m/s");
 
-        return originalDamage + ((float) (approachVelocity / VELOCITY_INCREMENT));
+        if (approachVelocity < 0) return (float) (originalDamage + (approachVelocity / 100F));
+        return (originalDamage * ((float) (approachVelocity / VELOCITY_INCREMENT)));
     }
 
     @SubscribeEvent
