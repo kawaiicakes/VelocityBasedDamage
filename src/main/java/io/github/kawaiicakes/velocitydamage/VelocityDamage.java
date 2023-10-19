@@ -32,6 +32,9 @@ public class VelocityDamage
     public static final String MOD_ID = "velocitydamage";
     public static final ResourceLocation POSITION_CAPABILITY_ID = new ResourceLocation(MOD_ID, "delta_position");
     private static final Logger LOGGER = LogUtils.getLogger();
+    /**
+     * For some reason entities on the ground still have a negative delta Y change of this value.
+     */
     public static final double RESTING_Y_DELTA = 0.0784000015258789;
     public static final double VELOCITY_INCREMENT = 3.2;
 
@@ -56,7 +59,7 @@ public class VelocityDamage
         float originalDamage = event.getAmount();
         LOGGER.debug("Attack pre-change: " + originalDamage);
 
-        final float newDamage = calculateNewDamage(returnVelocity(attacker), returnVelocity(event.getEntity()), originalDamage);
+        final float newDamage = calculateNewDamage(attacker, event.getEntity(), originalDamage);
 
         event.setAmount(newDamage);
         LOGGER.debug("Attack post-change: " + newDamage);
@@ -79,12 +82,24 @@ public class VelocityDamage
     }
 
     // TODO: configurable max damage, min damage, velocity multiplier, etc.
-    // TODO: redo the math here lol
-    private static float calculateNewDamage(Vec3 attackerVelocity, Vec3 targetVelocity, float originalDamage) {
-        // Whereas positive denotes the direction approaching the target
-        double approachVelocity = attackerVelocity.dot(targetVelocity) != 0
-                ? -attackerVelocity.dot(targetVelocity)
-                : attackerVelocity.length();
+    private static float calculateNewDamage(LivingEntity attacker, LivingEntity target, float originalDamage) {
+        Vec3 attackerVelocity = returnVelocity(attacker);
+        Vec3 targetVelocity = returnVelocity(target);
+
+        double dotProduct = attackerVelocity.dot(targetVelocity);
+
+        double approachVelocity;
+        approachVelocity = dotProduct;
+        if (dotProduct == 0) {
+            if (attackerVelocity.length() == 0 && targetVelocity.length() == 0) return originalDamage;
+
+            Vec3 attackerSpoofedVelocity = attackerVelocity.length() != 0 ? attackerVelocity : targetVelocity.reverse();
+            Vec3 attackerToTargetVector = target.position().subtract(attacker.position()).normalize();
+
+            approachVelocity = attackerSpoofedVelocity.dot(attackerToTargetVector);
+        }
+
+        LOGGER.debug("The attacker is approaching the target at " + approachVelocity + "m/s");
 
         return originalDamage + ((float) (approachVelocity / VELOCITY_INCREMENT));
     }
