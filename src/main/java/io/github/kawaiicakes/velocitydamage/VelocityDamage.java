@@ -88,8 +88,17 @@ public class VelocityDamage
 
         double dotProduct = attackerVelocity.dot(targetVelocity);
 
-        double approachVelocity;
-        approachVelocity = dotProduct;
+        double approachVelocity = 0;
+        if (dotProduct > 0) {
+            Vec3 attackerToTargetVector = target.position().subtract(attacker.position()).normalize();
+            double attackerToTargetVelocity = attackerVelocity.dot(attackerToTargetVector);
+
+            if (attackerToTargetVelocity == 0) return originalDamage;
+            approachVelocity = attackerToTargetVelocity > 0
+                    ? dotProduct
+                    : -dotProduct;
+        }
+
         if (dotProduct == 0) {
             if (attackerVelocity.length() == 0 && targetVelocity.length() == 0) return originalDamage;
 
@@ -99,7 +108,17 @@ public class VelocityDamage
             approachVelocity = attackerSpoofedVelocity.dot(attackerToTargetVector);
         }
 
-        LOGGER.debug("The attacker is approaching the target at " + approachVelocity + "m/s");
+        if (dotProduct < 0) {
+            Vec3 attackerToTargetVector = target.position().subtract(attacker.position()).normalize();
+            double attackerToTargetVelocity = attackerVelocity.dot(attackerToTargetVector);
+
+            if (attackerToTargetVelocity == 0) return originalDamage;
+            approachVelocity = attackerToTargetVelocity > 0
+                    ? -dotProduct
+                    : dotProduct;
+        }
+
+        LOGGER.debug("The attacker and target are approaching each other at " + approachVelocity + "m/s");
 
         return originalDamage + ((float) (approachVelocity / VELOCITY_INCREMENT));
     }
