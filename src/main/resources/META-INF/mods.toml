@@ -1,0 +1,29 @@
+modLoader="javafml"
+loaderVersion="[43,)"
+license="MIT"
+issueTrackerURL="https://github.com/kawaiicakes/VelocityBasedDamage/issues"
+
+[[mods]]
+modId="velocitydamage"
+version="${mod_version}"
+displayName="Velocity-Based Damage"
+displayURL="https://github.com/kawaiicakes/VelocityBasedDamage/"
+logoFile="velocitydamage.png"
+credits="Thanks to [pitbox46](https://legacy.curseforge.com/members/pitbox46/projects) for the concept."
+authors="kawaiicakes"
+description='''
+Simple mod multiplying damage based on velocity of the attacker relative to the target.
+'''
+
+[[dependencies.velocitydamage]]
+    modId="forge"
+    mandatory=true
+    versionRange="[43,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.velocitydamage]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.19.2,1.20)"
+    ordering="NONE"
+    side="BOTH"
