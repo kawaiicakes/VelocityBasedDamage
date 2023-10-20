@@ -75,6 +75,7 @@ public class VelocityDamage
     // Lowest priority so other mods have a chance to change the damage prior to this
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onLivingHurt(LivingHurtEvent event) {
+        if (event.isCanceled()) return;
         if (!(event.getSource().getEntity() instanceof LivingEntity attacker)) return;
 
         float originalDamage = event.getAmount();
