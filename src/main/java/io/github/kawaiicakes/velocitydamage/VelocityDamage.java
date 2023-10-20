@@ -95,7 +95,7 @@ public class VelocityDamage
 
         double approachSpeed = targetVelocity.subtract(attackerVelocity).length();
 
-        Vec3 directionToTarget = attacker.position().subtract(target.position()).normalize();
+        Vec3 directionToTarget = target.position().subtract(attacker.position()).normalize();
         double attackerToTargetVelocityComponent = directionToTarget.dot(attackerVelocity);
 
         if (directionToTarget.length() == 0) return approachSpeed;
