@@ -36,6 +36,9 @@ public class VelocityDamage
      * For some reason entities on the ground still have a negative delta Y change of this value.
      */
     public static final double RESTING_Y_DELTA = 0.0784000015258789;
+    /**
+     * Arbitrary value.
+     */
     public static final double VELOCITY_INCREMENT = 3.2;
 
     public VelocityDamage() {
@@ -106,11 +109,13 @@ public class VelocityDamage
     }
 
     // TODO: configurable max damage, min damage, velocity multiplier, etc.
-    // FIXME: INSANE damage multiplier as entity positions approach each other.
     private static double calculateNewDamage(double approachVelocity, float originalDamage) {
+        double arbitraryVelocity = approachVelocity / VELOCITY_INCREMENT;
+        double multiplier = (arbitraryVelocity * arbitraryVelocity) / 2;
+
         return approachVelocity < 0
-                ? (originalDamage + (approachVelocity / 100F))
-                : (originalDamage * (approachVelocity / VELOCITY_INCREMENT));
+                ? (originalDamage - multiplier)
+                : (originalDamage + multiplier);
     }
 
     @SubscribeEvent
