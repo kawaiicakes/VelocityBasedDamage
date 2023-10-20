@@ -37,9 +37,17 @@ public class VelocityDamage
      */
     public static final double RESTING_Y_DELTA = 0.0784000015258789;
     /**
-     * Arbitrary value.
+     * Arbitrary value. The function f(x) represents the % increase of the original damage and is equal to
+     * ((x / VELOCITY_INCREMENT)^2) / 2; where x indicates one-dimensional velocity in the direction of the target
+     * (when positive). In other words, x is the speed with which the attacker is approaching (or for that matter,
+     * retreating from) the target.
+     * <br><br>
+     * The player by default sprints at 5.612m/s. When VELOCITY_INCREMENT is the default 3.96828326, a player sprinting
+     * into a stationary target will have a 100% bonus on their attack. The fastest horses in vanilla Minecraft
+     * have a top speed of 14.23m/s. Using the formula at the default VELOCITY_INCREMENT, this returns as a
+     * 643% percent increase in damage.
      */
-    public static final double VELOCITY_INCREMENT = 3.2;
+    public static double VELOCITY_INCREMENT = 3.96828326;
 
     public VelocityDamage() {
         MinecraftForge.EVENT_BUS.register(VelocityDamage.class);
@@ -114,8 +122,8 @@ public class VelocityDamage
         double multiplier = (arbitraryVelocity * arbitraryVelocity) / 2;
 
         return approachVelocity < 0
-                ? (originalDamage - multiplier)
-                : (originalDamage + multiplier);
+                ? (originalDamage - (originalDamage * multiplier))
+                : (originalDamage + (originalDamage * multiplier));
     }
 
     @SubscribeEvent
