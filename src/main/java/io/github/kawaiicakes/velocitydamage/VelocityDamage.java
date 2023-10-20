@@ -47,7 +47,7 @@ public class VelocityDamage
      * have a top speed of 14.23m/s. Using the formula at the default VELOCITY_INCREMENT, this returns as a
      * 643% percent increase in damage.
      */
-    public static double VELOCITY_INCREMENT = 3.96828326;
+    public static float VELOCITY_INCREMENT = 3.96828326F;
     /**
      * The minimum damage dealt is capped to this percentage of the original. Must be a value from 0.0 to 1.0 inclusive.
      * The minimum is capped at 10% by default.
@@ -81,7 +81,7 @@ public class VelocityDamage
         LOGGER.debug("Attack pre-change: " + originalDamage);
 
         double approachVelocity = calculateApproachVelocity(attacker, event.getEntity());
-        float newDamage = calculateNewDamage(approachVelocity, originalDamage);
+        float newDamage = calculateNewDamage((float) approachVelocity, originalDamage);
 
         event.setAmount(newDamage);
         LOGGER.debug("Attack post-change: " + newDamage);
@@ -127,28 +127,23 @@ public class VelocityDamage
     }
 
     // TODO: configurable max damage, min damage, velocity multiplier, etc.
-    private static float calculateNewDamage(double approachVelocity, float originalDamage) {
+    private static float calculateNewDamage(float approachVelocity, float originalDamage) {
         if (Float.isInfinite(originalDamage)) return originalDamage;
 
-        double arbitraryVelocity = approachVelocity / VELOCITY_INCREMENT;
-        double multiplier = (arbitraryVelocity * arbitraryVelocity) / 2;
-        double percentageBonus = originalDamage * multiplier; //percentage bonus @ 9.9237... m/s is 3.126444021619501
+        float arbitraryVelocity = approachVelocity / VELOCITY_INCREMENT;
+        float multiplier = (arbitraryVelocity * arbitraryVelocity) / 2;
+        float percentageBonus = originalDamage * multiplier; //percentage bonus @ 9.9237m/s is 3.126444021619501
 
-        float maxDamage = (Float.isInfinite(originalDamage * MAXIMUM_DAMAGE_PERCENTAGE))
-                ? Float.MAX_VALUE
-                : originalDamage * MAXIMUM_DAMAGE_PERCENTAGE;
-
-        if (percentageBonus >= Float.POSITIVE_INFINITY) return maxDamage;
-        if (originalDamage + percentageBonus >= maxDamage) return maxDamage;
+        float maxDamage = originalDamage * MAXIMUM_DAMAGE_PERCENTAGE;
+        if (originalDamage + percentageBonus > maxDamage && approachVelocity >= 0) return maxDamage;
 
         float minDamage = originalDamage * MINIMUM_DAMAGE_PERCENTAGE;
+        if (originalDamage - percentageBonus <  originalDamage - (originalDamage * minDamage)
+                && approachVelocity < 0) return minDamage;
 
-        if (percentageBonus <= Float.NEGATIVE_INFINITY) return minDamage;
-        if (originalDamage - percentageBonus <= minDamage) return minDamage;
-
-        return (float) (approachVelocity < 0
+        return approachVelocity < 0
                         ? (originalDamage - percentageBonus)
-                        : (originalDamage + percentageBonus));
+                        : (originalDamage + percentageBonus);
     }
 
     @SubscribeEvent
