@@ -59,10 +59,12 @@ public class VelocityDamage
         float originalDamage = event.getAmount();
         LOGGER.debug("Attack pre-change: " + originalDamage);
 
-        final float newDamage = calculateNewDamage(attacker, event.getEntity(), originalDamage);
+        double approachVelocity = calculateApproachVelocity(attacker, event.getEntity());
+        double newDamage = calculateNewDamage(approachVelocity, originalDamage);
 
-        event.setAmount(newDamage);
+        event.setAmount((float) newDamage);
         LOGGER.debug("Attack post-change: " + newDamage);
+        LOGGER.debug("Attacker and target were approaching each other at " + approachVelocity + "m/s.");
     }
 
     /**
@@ -105,10 +107,10 @@ public class VelocityDamage
 
     // TODO: configurable max damage, min damage, velocity multiplier, etc.
     // FIXME: INSANE damage multiplier as entity positions approach each other.
-    private static float calculateNewDamage(double approachVelocity, float originalDamage) {
-
-        if (approachVelocity < 0) return (float) (originalDamage + (approachVelocity / 100F));
-        return (originalDamage * ((float) (approachVelocity / VELOCITY_INCREMENT)));
+    private static double calculateNewDamage(double approachVelocity, float originalDamage) {
+        return approachVelocity < 0
+                ? (originalDamage + (approachVelocity / 100F))
+                : (originalDamage * (approachVelocity / VELOCITY_INCREMENT));
     }
 
     @SubscribeEvent
