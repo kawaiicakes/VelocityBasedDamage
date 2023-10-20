@@ -81,45 +81,31 @@ public class VelocityDamage
         return entity.getDeltaMovement().add(0, RESTING_Y_DELTA, 0).scale(20);
     }
 
-    // TODO: configurable max damage, min damage, velocity multiplier, etc.
-    // FIXME: INSANE damage multiplier as entity positions approach each other.
-    private static float calculateNewDamage(LivingEntity attacker, LivingEntity target, float originalDamage) {
+    /**
+     * Positive values indicate that the attacker is approaching the target. Negative indicates that the attacker is
+     * retreating from the target.
+     */
+    private static double calculateApproachVelocity(LivingEntity attacker, LivingEntity target) {
         Vec3 attackerVelocity = returnVelocity(attacker);
         Vec3 targetVelocity = returnVelocity(target);
 
-        double dotProduct = attackerVelocity.dot(targetVelocity);
+        if (attackerVelocity.length() == 0 && targetVelocity.length() == 0) return 0;
 
-        double approachVelocity = 0;
-        if (dotProduct > 0) {
-            Vec3 attackerToTargetVector = target.position().subtract(attacker.position()).normalize();
-            double attackerToTargetVelocity = attackerVelocity.dot(attackerToTargetVector);
+        double approachSpeed = targetVelocity.subtract(attackerVelocity).length();
 
-            if (attackerToTargetVelocity == 0) return originalDamage;
-            approachVelocity = attackerToTargetVelocity > 0
-                    ? dotProduct
-                    : -dotProduct;
-        }
+        Vec3 directionToTarget = attacker.position().subtract(target.position()).normalize();
+        double attackerToTargetVelocityComponent = directionToTarget.dot(attackerVelocity);
 
-        if (dotProduct == 0) {
-            if (attackerVelocity.length() == 0 && targetVelocity.length() == 0) return originalDamage;
+        if (directionToTarget.length() == 0) return approachSpeed;
+        if (attackerToTargetVelocityComponent < 0) return -approachSpeed;
+        if (attackerToTargetVelocityComponent > 0) return approachSpeed;
 
-            Vec3 attackerSpoofedVelocity = attackerVelocity.length() != 0 ? attackerVelocity : targetVelocity.reverse();
-            Vec3 attackerToTargetVector = target.position().subtract(attacker.position()).normalize();
+        return directionToTarget.reverse().dot(targetVelocity);
+    }
 
-            approachVelocity = attackerSpoofedVelocity.dot(attackerToTargetVector);
-        }
-
-        if (dotProduct < 0) {
-            Vec3 attackerToTargetVector = target.position().subtract(attacker.position()).normalize();
-            double attackerToTargetVelocity = attackerVelocity.dot(attackerToTargetVector);
-
-            if (attackerToTargetVelocity == 0) return originalDamage;
-            approachVelocity = attackerToTargetVelocity > 0
-                    ? -dotProduct
-                    : dotProduct;
-        }
-
-        LOGGER.debug("The attacker and target are approaching each other at " + approachVelocity + "m/s");
+    // TODO: configurable max damage, min damage, velocity multiplier, etc.
+    // FIXME: INSANE damage multiplier as entity positions approach each other.
+    private static float calculateNewDamage(double approachVelocity, float originalDamage) {
 
         if (approachVelocity < 0) return (float) (originalDamage + (approachVelocity / 100F));
         return (originalDamage * ((float) (approachVelocity / VELOCITY_INCREMENT)));
