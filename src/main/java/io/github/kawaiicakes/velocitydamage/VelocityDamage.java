@@ -47,17 +47,17 @@ public class VelocityDamage
      * have a top speed of 14.23m/s. Using the formula at the default VELOCITY_INCREMENT, this returns as a
      * 643% percent increase in damage.
      */
-    public static float VELOCITY_INCREMENT = 3.96828326F;
+    protected static float VELOCITY_INCREMENT = 3.96828326F;
     /**
      * The minimum damage dealt is capped to this percentage of the original. Must be a value from 0.0 to 1.0 inclusive.
      * The minimum is capped at 10% by default.
      */
-    public static float MINIMUM_DAMAGE_PERCENTAGE = 0.10F;
+    protected static float MINIMUM_DAMAGE_PERCENTAGE = 0.10F;
     /**
      * The maximum bonus damage one can inflict is capped to this percentage of the original. Must be greater than 0.
      * There is no maximum by default.
      */
-    public static float MAXIMUM_DAMAGE_PERCENTAGE = Float.MAX_VALUE;
+    protected static float MAXIMUM_DAMAGE_PERCENTAGE = Float.MAX_VALUE;
 
     public VelocityDamage() {
         MinecraftForge.EVENT_BUS.register(VelocityDamage.class);
