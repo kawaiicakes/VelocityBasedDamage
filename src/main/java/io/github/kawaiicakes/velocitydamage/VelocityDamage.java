@@ -76,7 +76,7 @@ public class VelocityDamage
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onLivingHurt(LivingHurtEvent event) {
         if (event.isCanceled()) return;
-        if (!(event.getSource().getEntity() instanceof LivingEntity attacker)) return;
+        if (!(event.getSource().getDirectEntity() instanceof LivingEntity attacker)) return;
 
         float originalDamage = event.getAmount();
         LOGGER.debug("Attack pre-change: " + originalDamage);
