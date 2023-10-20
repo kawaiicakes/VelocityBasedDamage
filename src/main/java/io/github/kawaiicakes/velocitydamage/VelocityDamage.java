@@ -52,12 +52,12 @@ public class VelocityDamage
      * The minimum damage dealt is capped to this percentage of the original. Must be a value from 0.0 to 1.0 inclusive.
      * The minimum is capped at 10% by default.
      */
-    public static double MINIMUM_DAMAGE_PERCENTAGE = 0.10;
+    public static float MINIMUM_DAMAGE_PERCENTAGE = 0.10F;
     /**
      * The maximum bonus damage one can inflict is capped to this percentage of the original. Must be greater than 0.
      * There is no maximum by default.
      */
-    public static double MAXIMUM_DAMAGE_PERCENTAGE = Double.MAX_VALUE;
+    public static float MAXIMUM_DAMAGE_PERCENTAGE = Float.MAX_VALUE;
 
     public VelocityDamage() {
         MinecraftForge.EVENT_BUS.register(VelocityDamage.class);
@@ -81,9 +81,9 @@ public class VelocityDamage
         LOGGER.debug("Attack pre-change: " + originalDamage);
 
         double approachVelocity = calculateApproachVelocity(attacker, event.getEntity());
-        double newDamage = calculateNewDamage(approachVelocity, originalDamage);
+        float newDamage = calculateNewDamage(approachVelocity, originalDamage);
 
-        event.setAmount((float) newDamage);
+        event.setAmount(newDamage);
         LOGGER.debug("Attack post-change: " + newDamage);
         LOGGER.debug("Attacker and target were approaching each other at " + approachVelocity + "m/s.");
     }
@@ -127,23 +127,28 @@ public class VelocityDamage
     }
 
     // TODO: configurable max damage, min damage, velocity multiplier, etc.
-    private static double calculateNewDamage(double approachVelocity, float originalDamage) {
+    private static float calculateNewDamage(double approachVelocity, float originalDamage) {
+        if (Float.isInfinite(originalDamage)) return originalDamage;
+
         double arbitraryVelocity = approachVelocity / VELOCITY_INCREMENT;
         double multiplier = (arbitraryVelocity * arbitraryVelocity) / 2;
-        double percentageBonus = originalDamage * multiplier;
+        double percentageBonus = originalDamage * multiplier; //percentage bonus @ 9.9237... m/s is 3.126444021619501
 
-        double maxDamage = originalDamage * MAXIMUM_DAMAGE_PERCENTAGE;
-        double minDamage = originalDamage * MINIMUM_DAMAGE_PERCENTAGE;
+        float maxDamage = (Float.isInfinite(originalDamage * MAXIMUM_DAMAGE_PERCENTAGE))
+                ? Float.MAX_VALUE
+                : originalDamage * MAXIMUM_DAMAGE_PERCENTAGE;
 
+        if (percentageBonus >= Float.POSITIVE_INFINITY) return maxDamage;
         if (originalDamage + percentageBonus >= maxDamage) return maxDamage;
+
+        float minDamage = originalDamage * MINIMUM_DAMAGE_PERCENTAGE;
+
+        if (percentageBonus <= Float.NEGATIVE_INFINITY) return minDamage;
         if (originalDamage - percentageBonus <= minDamage) return minDamage;
 
-        if (originalDamage + percentageBonus >= Double.POSITIVE_INFINITY) return maxDamage;
-        if (originalDamage - percentageBonus <= Double.NEGATIVE_INFINITY) return minDamage;
-
-        return approachVelocity < 0
-                ? (originalDamage - percentageBonus)
-                : (originalDamage + percentageBonus);
+        return (float) (approachVelocity < 0
+                        ? (originalDamage - percentageBonus)
+                        : (originalDamage + percentageBonus));
     }
 
     @SubscribeEvent
