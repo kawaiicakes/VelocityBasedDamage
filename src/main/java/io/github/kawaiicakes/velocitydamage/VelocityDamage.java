@@ -48,6 +48,16 @@ public class VelocityDamage
      * 643% percent increase in damage.
      */
     public static double VELOCITY_INCREMENT = 3.96828326;
+    /**
+     * The minimum damage dealt is capped to this percentage of the original. Must be a value from 0.0 to 1.0 inclusive.
+     * The minimum is capped at 10% by default.
+     */
+    public static double MINIMUM_DAMAGE_PERCENTAGE = 0.10;
+    /**
+     * The maximum bonus damage one can inflict is capped to this percentage of the original. Must be greater than 0.
+     * There is no maximum by default.
+     */
+    public static double MAXIMUM_DAMAGE_PERCENTAGE = Double.MAX_VALUE;
 
     public VelocityDamage() {
         MinecraftForge.EVENT_BUS.register(VelocityDamage.class);
@@ -120,10 +130,20 @@ public class VelocityDamage
     private static double calculateNewDamage(double approachVelocity, float originalDamage) {
         double arbitraryVelocity = approachVelocity / VELOCITY_INCREMENT;
         double multiplier = (arbitraryVelocity * arbitraryVelocity) / 2;
+        double percentageBonus = originalDamage * multiplier;
+
+        double maxDamage = originalDamage * MAXIMUM_DAMAGE_PERCENTAGE;
+        double minDamage = originalDamage * MINIMUM_DAMAGE_PERCENTAGE;
+
+        if (originalDamage + percentageBonus >= maxDamage) return maxDamage;
+        if (originalDamage - percentageBonus <= minDamage) return minDamage;
+
+        if (originalDamage + percentageBonus >= Double.POSITIVE_INFINITY) return maxDamage;
+        if (originalDamage - percentageBonus <= Double.NEGATIVE_INFINITY) return minDamage;
 
         return approachVelocity < 0
-                ? (originalDamage - (originalDamage * multiplier))
-                : (originalDamage + (originalDamage * multiplier));
+                ? (originalDamage - percentageBonus)
+                : (originalDamage + percentageBonus);
     }
 
     @SubscribeEvent
