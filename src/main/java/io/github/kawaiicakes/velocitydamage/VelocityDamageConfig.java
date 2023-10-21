@@ -6,7 +6,8 @@ import org.apache.commons.lang3.tuple.Pair;
 public class VelocityDamageConfig {
     public static final float DEFAULT_SQUASH = 3.96828326F;
     public static final float DEFAULT_EXPONENTIATION = 2.0F;
-    public static final float DEFAULT_MINIMUM_DMG = 0.10F;
+    // FIXME: An iron golem continually attacking me will sometimes manage to be moving away; often enough to get down to the previous minimum of 10% damage.
+    public static final float DEFAULT_MINIMUM_DMG = 0.50F;
     public static final float DEFAULT_MAXIMUM_DMG = Float.MAX_VALUE;
 
     protected static ForgeConfigSpec SERVER_SPEC;
