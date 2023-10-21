@@ -54,13 +54,12 @@ public class VelocityDamage
         if (!(event.getSource().getDirectEntity() instanceof LivingEntity attacker)) return;
 
         float originalDamage = event.getAmount();
-        LOGGER.debug("Attack pre-change: " + originalDamage);
 
         double approachVelocity = calculateApproachVelocity(attacker, event.getEntity());
         float newDamage = calculateNewDamage((float) approachVelocity, originalDamage);
 
         event.setAmount(newDamage);
-        LOGGER.debug("Attack post-change: " + newDamage);
+        LOGGER.debug("Attacker pos: " + attacker.position().y + " | " + "Target pos: " + event.getEntity().position().y);
         LOGGER.debug("Attacker and target were approaching each other at " + approachVelocity + "m/s.");
     }
 
@@ -74,7 +73,7 @@ public class VelocityDamage
     public static Vec3 entityVelocity(Entity entity) {
         if (entity instanceof ServerPlayer player) {
             PositionCapability position = player.getCapability(POSITION_CAP).orElseThrow(IllegalStateException::new);
-            return player.position().subtract(position.oldPosition).scale(20);
+            return position.currentPosition.subtract(position.oldPosition).scale(20);
         }
 
         return entity.getDeltaMovement().add(0, RESTING_Y_DELTA, 0).scale(20);
@@ -83,6 +82,10 @@ public class VelocityDamage
     /**
      * Positive values indicate that the attacker is approaching the target. Negative indicates that the attacker is
      * retreating from the target.
+     * <br><br>
+     * Faithful to true calculations, however; it should be noted that since position is measured at the feet, if the
+     * attacker hits the target as it moves upwards relative to the attacker, a debuff is incurred.
+     *
      */
     public static double calculateApproachVelocity(LivingEntity attacker, LivingEntity target) {
         Vec3 attackerVelocity = entityVelocity(attacker);
