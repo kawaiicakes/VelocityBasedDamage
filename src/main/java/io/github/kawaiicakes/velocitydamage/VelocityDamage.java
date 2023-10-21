@@ -89,17 +89,10 @@ public class VelocityDamage
         Vec3 targetVelocity = entityVelocity(target);
 
         if (attackerVelocity.length() == 0 && targetVelocity.length() == 0) return 0;
-
-        double approachSpeed = targetVelocity.subtract(attackerVelocity).length();
-
+        Vec3 velocityDifference = attackerVelocity.subtract(targetVelocity);
         Vec3 directionToTarget = target.position().subtract(attacker.position()).normalize();
-        double attackerToTargetVelocityComponent = directionToTarget.dot(attackerVelocity);
 
-        if (directionToTarget.length() == 0) return approachSpeed;
-        if (attackerToTargetVelocityComponent < 0) return -approachSpeed;
-        if (attackerToTargetVelocityComponent > 0) return approachSpeed;
-
-        return directionToTarget.reverse().dot(targetVelocity);
+        return directionToTarget.dot(velocityDifference);
     }
 
     // TODO: configurable max damage, min damage, velocity multiplier, etc.
