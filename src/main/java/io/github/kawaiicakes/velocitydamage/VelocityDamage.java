@@ -16,6 +16,7 @@ import net.minecraftforge.fml.config.ModConfig;
 import org.slf4j.Logger;
 
 import static io.github.kawaiicakes.velocitydamage.PositionCapability.Provider.POSITION_CAP;
+import static io.github.kawaiicakes.velocitydamage.VelocityDamageConfig.SERVER;
 import static io.github.kawaiicakes.velocitydamage.VelocityDamageConfig.SERVER_SPEC;
 import static net.minecraftforge.event.TickEvent.Phase.START;
 
@@ -28,18 +29,6 @@ public class VelocityDamage
      * For some reason entities on the ground still have a negative delta Y change of this value.
      */
     public static final double RESTING_Y_DELTA = 0.0784000015258789;
-
-    protected static float VELOCITY_INCREMENT = 3.96828326F;
-    /**
-     * The minimum damage dealt is capped to this percentage of the original. Must be a value from 0.0 to 1.0 inclusive.
-     * The minimum is capped at 10% by default.
-     */
-    protected static float MINIMUM_DAMAGE_PERCENTAGE = 0.10F;
-    /**
-     * The maximum bonus damage one can inflict is capped to this percentage of the original. Must be greater than 0.
-     * There is no maximum by default.
-     */
-    protected static float MAXIMUM_DAMAGE_PERCENTAGE = Float.MAX_VALUE;
 
     public VelocityDamage() {
         MinecraftForge.EVENT_BUS.register(VelocityDamage.class);
@@ -117,14 +106,14 @@ public class VelocityDamage
     public static float calculateNewDamage(float approachVelocity, float originalDamage) {
         if (Float.isInfinite(originalDamage)) return originalDamage;
 
-        float arbitraryVelocity = approachVelocity / VELOCITY_INCREMENT;
-        float multiplier = (arbitraryVelocity * arbitraryVelocity) / 2;
+        float arbitraryVelocity = approachVelocity / SERVER.velocityIncrement.get().floatValue();
+        float multiplier = (float) (Math.pow(arbitraryVelocity, SERVER.exponentiationConstant.get().floatValue()) / 2F);
         float percentageBonus = originalDamage * multiplier; //percentage bonus @ 9.9237m/s is 3.126444021619501
 
-        float maxDamage = originalDamage * MAXIMUM_DAMAGE_PERCENTAGE;
+        float maxDamage = originalDamage * SERVER.maxDamagePercent.get().floatValue();
         if (originalDamage + percentageBonus > maxDamage && approachVelocity >= 0) return maxDamage;
 
-        float minDamage = originalDamage * MINIMUM_DAMAGE_PERCENTAGE;
+        float minDamage = originalDamage * SERVER.minDamagePercent.get().floatValue();
         if (originalDamage - percentageBonus <  originalDamage - (originalDamage * minDamage)
                 && approachVelocity < 0) return minDamage;
 
