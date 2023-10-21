@@ -99,8 +99,8 @@ public class VelocityDamage
         Vec3 targetPosition = target.position();
 
         // TODO: handle cases where a very small entity attacks a very large one?
-        if (targetVelocity.y() > 0 && targetPosition.y() > attackerPosition.y()) attackerPosition = attacker.getEyePosition();
-        if (targetVelocity.y() < 0 && targetPosition.y() < attackerPosition.y()) targetPosition = target.getEyePosition();
+        if (attackerVelocity.y() - targetVelocity.y() >= 0 && target.position().y() > attacker.position().y()) attackerPosition = attacker.getEyePosition();
+        if (attackerVelocity.y() - targetVelocity.y() <= 0 && target.position().y() < attacker.position().y()) targetPosition = target.getEyePosition();
 
         Vec3 velocityDifference = attackerVelocity.subtract(targetVelocity);
         Vec3 directionToTarget = targetPosition.subtract(attackerPosition).normalize();
