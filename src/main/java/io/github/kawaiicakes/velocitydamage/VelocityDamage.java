@@ -107,31 +107,19 @@ public class VelocityDamage
 
         return directionToTarget.dot(velocityDifference);
     }
-
     public static float calculateNewDamage(float approachVelocity, float originalDamage) {
-        if (Float.isInfinite(originalDamage)) return originalDamage;
-
-        /*
-            Attack pre-change: 17.5
-            Attack post-change: -10.663912
-            Attacker and target were approaching each other at -3.5881655983034655m/s.
-
-            WHAT.
-         */
+        if (approachVelocity == 0) return originalDamage;
 
         float arbitraryVelocity = approachVelocity / SERVER.velocityIncrement.get().floatValue();
         float multiplier = (float) (Math.pow(arbitraryVelocity, SERVER.exponentiationConstant.get().floatValue()) / 2F);
-        float percentageBonus = originalDamage * multiplier; //percentage bonus @ 9.9237m/s is 3.126444021619501
+        float percentageBonus = originalDamage * multiplier;
+
+        if (approachVelocity < 0) {
+            float minDamage = originalDamage * SERVER.minDamagePercent.get().floatValue();
+            return Math.max(minDamage, originalDamage - percentageBonus);
+        }
 
         float maxDamage = originalDamage * SERVER.maxDamagePercent.get().floatValue();
-        if (originalDamage + percentageBonus > maxDamage && approachVelocity >= 0) return maxDamage;
-
-        float minDamage = originalDamage * SERVER.minDamagePercent.get().floatValue();
-        if (originalDamage - percentageBonus <  originalDamage - (originalDamage * minDamage)
-                && approachVelocity < 0) return minDamage;
-
-        return approachVelocity < 0
-                        ? (originalDamage - percentageBonus)
-                        : (originalDamage + percentageBonus);
+        return Math.min(maxDamage, originalDamage + percentageBonus);
     }
 }
