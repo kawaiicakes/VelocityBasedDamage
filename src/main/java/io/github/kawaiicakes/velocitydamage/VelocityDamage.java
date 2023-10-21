@@ -86,22 +86,38 @@ public class VelocityDamage
      * retreating from the target.
      * <br><br>
      * Faithful to true calculations, however; it should be noted that since position is measured at the feet, if the
-     * attacker hits the target as it moves upwards relative to the attacker, a debuff is incurred.
-     *
+     * attacker hits the target as it moves upwards relative to the attacker, a debuff is incurred. To fairly rectify
+     * this, the eye positions of the entities are also considered.
      */
     public static double calculateApproachVelocity(LivingEntity attacker, LivingEntity target) {
         Vec3 attackerVelocity = entityVelocity(attacker);
         Vec3 targetVelocity = entityVelocity(target);
 
         if (attackerVelocity.length() == 0 && targetVelocity.length() == 0) return 0;
+
+        Vec3 attackerPosition = attacker.position();
+        Vec3 targetPosition = target.position();
+
+        // TODO: handle cases where a very small entity attacks a very large one?
+        if (targetVelocity.y() > 0 && targetPosition.y() > attackerPosition.y()) attackerPosition = attacker.getEyePosition();
+        if (targetVelocity.y() < 0 && targetPosition.y() < attackerPosition.y()) targetPosition = target.getEyePosition();
+
         Vec3 velocityDifference = attackerVelocity.subtract(targetVelocity);
-        Vec3 directionToTarget = target.position().subtract(attacker.position()).normalize();
+        Vec3 directionToTarget = targetPosition.subtract(attackerPosition).normalize();
 
         return directionToTarget.dot(velocityDifference);
     }
 
     public static float calculateNewDamage(float approachVelocity, float originalDamage) {
         if (Float.isInfinite(originalDamage)) return originalDamage;
+
+        /*
+            Attack pre-change: 17.5
+            Attack post-change: -10.663912
+            Attacker and target were approaching each other at -3.5881655983034655m/s.
+
+            WHAT.
+         */
 
         float arbitraryVelocity = approachVelocity / SERVER.velocityIncrement.get().floatValue();
         float multiplier = (float) (Math.pow(arbitraryVelocity, SERVER.exponentiationConstant.get().floatValue()) / 2F);
