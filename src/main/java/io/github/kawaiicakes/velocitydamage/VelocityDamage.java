@@ -95,7 +95,6 @@ public class VelocityDamage
         return directionToTarget.dot(velocityDifference);
     }
 
-    // TODO: configurable max damage, min damage, velocity multiplier, etc.
     public static float calculateNewDamage(float approachVelocity, float originalDamage) {
         if (Float.isInfinite(originalDamage)) return originalDamage;
 
