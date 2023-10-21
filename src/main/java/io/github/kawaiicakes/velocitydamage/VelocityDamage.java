@@ -71,7 +71,7 @@ public class VelocityDamage
      * @param entity the <code>Entity</code> to return a velocity from.
      * @return  the velocity of the entity relative to the world as an R3 vector.
      */
-    public static Vec3 returnVelocity(Entity entity) {
+    public static Vec3 entityVelocity(Entity entity) {
         if (entity instanceof ServerPlayer player) {
             PositionCapability position = player.getCapability(POSITION_CAP).orElseThrow(IllegalStateException::new);
             return player.position().subtract(position.oldPosition).scale(20);
@@ -85,8 +85,8 @@ public class VelocityDamage
      * retreating from the target.
      */
     public static double calculateApproachVelocity(LivingEntity attacker, LivingEntity target) {
-        Vec3 attackerVelocity = returnVelocity(attacker);
-        Vec3 targetVelocity = returnVelocity(target);
+        Vec3 attackerVelocity = entityVelocity(attacker);
+        Vec3 targetVelocity = entityVelocity(target);
 
         if (attackerVelocity.length() == 0 && targetVelocity.length() == 0) return 0;
 
