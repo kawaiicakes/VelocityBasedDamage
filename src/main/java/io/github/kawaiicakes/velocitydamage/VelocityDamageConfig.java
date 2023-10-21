@@ -5,6 +5,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 public class VelocityDamageConfig {
     public static final float DEFAULT_SQUASH = 3.96828326F;
+    public static final float DEFAULT_EXPONENTIATION = 2.0F;
     public static final float DEFAULT_MINIMUM_DMG = 0.10F;
     public static final float DEFAULT_MAXIMUM_DMG = Float.MAX_VALUE;
 
@@ -31,7 +32,15 @@ public class VelocityDamageConfig {
          */
         public final ForgeConfigSpec.DoubleValue velocityIncrement;
         public final ForgeConfigSpec.DoubleValue exponentiationConstant;
+        /**
+         * The minimum damage dealt is capped to this percentage of the original. Must be a value from 0.0 to 1.0 inclusive.
+         * The minimum is capped at 10% by default.
+         */
         public final ForgeConfigSpec.DoubleValue minDamagePercent;
+        /**
+         * The maximum bonus damage one can inflict is capped to this percentage of the original. Must be greater than 0.
+         * There is no maximum by default.
+         */
         public final ForgeConfigSpec.DoubleValue maxDamagePercent;
 
         protected ConfigValues(ForgeConfigSpec.Builder builder) {
@@ -44,7 +53,7 @@ public class VelocityDamageConfig {
             this.exponentiationConstant = builder
                     .comment("Changes the power of the damage calculation function.")
                     .translation(key("exponentiationConstant"))
-                    .defineInRange("velocityIncrement", DEFAULT_SQUASH, 1, Float.MAX_VALUE);
+                    .defineInRange("velocityIncrement", DEFAULT_EXPONENTIATION, 1, Float.MAX_VALUE);
 
             this.minDamagePercent = builder
                     .comment("The minimum amount of damage, as a percentage of the original, that a debuffed attack may do.")
