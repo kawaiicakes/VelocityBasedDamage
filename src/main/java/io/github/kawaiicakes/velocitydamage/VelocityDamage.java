@@ -1,36 +1,25 @@
 package io.github.kawaiicakes.velocitydamage;
 
 import com.mojang.logging.LogUtils;
-import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.CapabilityToken;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-import static io.github.kawaiicakes.velocitydamage.VelocityDamage.PositionCapabilityProvider.POSITION_CAP;
+import static io.github.kawaiicakes.velocitydamage.PositionCapability.Provider.POSITION_CAP;
 import static net.minecraftforge.event.TickEvent.Phase.START;
 
 @Mod(VelocityDamage.MOD_ID)
 public class VelocityDamage
 {
     public static final String MOD_ID = "velocitydamage";
-    public static final ResourceLocation POSITION_CAPABILITY_ID = new ResourceLocation(MOD_ID, "delta_position");
     private static final Logger LOGGER = LogUtils.getLogger();
     /**
      * For some reason entities on the ground still have a negative delta Y change of this value.
@@ -61,6 +50,7 @@ public class VelocityDamage
 
     public VelocityDamage() {
         MinecraftForge.EVENT_BUS.register(VelocityDamage.class);
+        MinecraftForge.EVENT_BUS.register(PositionCapability.class);
     }
 
     @SubscribeEvent
@@ -145,46 +135,5 @@ public class VelocityDamage
         return approachVelocity < 0
                         ? (originalDamage - percentageBonus)
                         : (originalDamage + percentageBonus);
-    }
-
-    @SubscribeEvent
-    public static void onAttachCapabilitiesEvent(AttachCapabilitiesEvent<Entity> event) {
-        if (!(event.getObject() instanceof ServerPlayer player)) return;
-        if ((player.getCapability(POSITION_CAP).isPresent())) return;
-
-        event.addCapability(POSITION_CAPABILITY_ID, new PositionCapabilityProvider());
-    }
-
-    protected static class PositionCapabilityProvider implements ICapabilityProvider {
-        public static Capability<PositionCapability> POSITION_CAP = CapabilityManager.get(new CapabilityToken<>() {});
-
-        private PositionCapability capability = null;
-        private final LazyOptional<PositionCapability> lazyHandler = LazyOptional.of(this::createCapability);
-
-        private PositionCapability createCapability() {
-            if (this.capability == null) {
-                this.capability = new PositionCapability();
-            }
-            return this.capability;
-        }
-
-        @Override
-        public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-            if (cap == POSITION_CAP) {
-                return lazyHandler.cast();
-            }
-
-            return LazyOptional.empty();
-        }
-    }
-
-    protected static class PositionCapability {
-        public Vec3 oldPosition;
-        public Vec3 currentPosition;
-
-        public void tickPosition(ServerPlayer player) {
-            oldPosition = currentPosition;
-            currentPosition = player.position();
-        }
     }
 }
