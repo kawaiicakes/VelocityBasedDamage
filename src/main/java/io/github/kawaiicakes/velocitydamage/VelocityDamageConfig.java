@@ -53,7 +53,7 @@ public class VelocityDamageConfig {
             this.exponentiationConstant = builder
                     .comment("Changes the power of the damage calculation function.")
                     .translation(key("exponentiationConstant"))
-                    .defineInRange("velocityIncrement", DEFAULT_EXPONENTIATION, 1, Float.MAX_VALUE);
+                    .defineInRange("exponentiationConstant", DEFAULT_EXPONENTIATION, 0, Float.MAX_VALUE);
 
             this.minDamagePercent = builder
                     .comment("The minimum amount of damage, as a percentage of the original, that a debuffed attack may do.")
