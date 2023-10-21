@@ -110,7 +110,7 @@ public class VelocityDamage
     public static float calculateNewDamage(float approachVelocity, float originalDamage) {
         if (approachVelocity == 0) return originalDamage;
 
-        float arbitraryVelocity = approachVelocity / SERVER.velocityIncrement.get().floatValue();
+        float arbitraryVelocity = Math.abs(approachVelocity) / SERVER.velocityIncrement.get().floatValue();
         float multiplier = (float) (Math.pow(arbitraryVelocity, SERVER.exponentiationConstant.get().floatValue()) / 2F);
         float percentageBonus = originalDamage * multiplier;
 
