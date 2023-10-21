@@ -86,7 +86,7 @@ public class VelocityDamage
      * @param entity the <code>Entity</code> to return a velocity from.
      * @return  the velocity of the entity relative to the world as an R3 vector.
      */
-    private static Vec3 returnVelocity(Entity entity) {
+    public static Vec3 returnVelocity(Entity entity) {
         if (entity instanceof ServerPlayer player) {
             PositionCapability position = player.getCapability(POSITION_CAP).orElseThrow(IllegalStateException::new);
             return player.position().subtract(position.oldPosition).scale(20);
@@ -99,7 +99,7 @@ public class VelocityDamage
      * Positive values indicate that the attacker is approaching the target. Negative indicates that the attacker is
      * retreating from the target.
      */
-    private static double calculateApproachVelocity(LivingEntity attacker, LivingEntity target) {
+    public static double calculateApproachVelocity(LivingEntity attacker, LivingEntity target) {
         Vec3 attackerVelocity = returnVelocity(attacker);
         Vec3 targetVelocity = returnVelocity(target);
 
@@ -118,7 +118,7 @@ public class VelocityDamage
     }
 
     // TODO: configurable max damage, min damage, velocity multiplier, etc.
-    private static float calculateNewDamage(float approachVelocity, float originalDamage) {
+    public static float calculateNewDamage(float approachVelocity, float originalDamage) {
         if (Float.isInfinite(originalDamage)) return originalDamage;
 
         float arbitraryVelocity = approachVelocity / VELOCITY_INCREMENT;
