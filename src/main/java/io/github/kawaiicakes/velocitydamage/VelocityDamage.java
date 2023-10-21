@@ -59,8 +59,10 @@ public class VelocityDamage
         float newDamage = calculateNewDamage((float) approachVelocity, originalDamage);
 
         event.setAmount(newDamage);
-        LOGGER.debug("Attacker pos: " + attacker.position().y + " | " + "Target pos: " + event.getEntity().position().y);
-        LOGGER.debug("Attacker and target were approaching each other at " + approachVelocity + "m/s.");
+
+        LOGGER.info("Attack pre-change: " + originalDamage);
+        LOGGER.info("Attack post-change: " + newDamage);
+        LOGGER.info("Attacker and target were approaching each other at " + approachVelocity + "m/s.");
     }
 
     /**
