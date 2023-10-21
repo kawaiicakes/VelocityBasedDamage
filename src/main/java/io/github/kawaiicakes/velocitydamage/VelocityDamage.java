@@ -10,10 +10,13 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import org.slf4j.Logger;
 
 import static io.github.kawaiicakes.velocitydamage.PositionCapability.Provider.POSITION_CAP;
+import static io.github.kawaiicakes.velocitydamage.VelocityDamageConfig.SERVER_SPEC;
 import static net.minecraftforge.event.TickEvent.Phase.START;
 
 @Mod(VelocityDamage.MOD_ID)
@@ -25,17 +28,7 @@ public class VelocityDamage
      * For some reason entities on the ground still have a negative delta Y change of this value.
      */
     public static final double RESTING_Y_DELTA = 0.0784000015258789;
-    /**
-     * Arbitrary value. The function f(x) represents the % increase of the original damage and is equal to
-     * ((x / VELOCITY_INCREMENT)^2) / 2; where x indicates one-dimensional velocity in the direction of the target
-     * (when positive). In other words, x is the speed with which the attacker is approaching (or for that matter,
-     * retreating from) the target.
-     * <br><br>
-     * The player by default sprints at 5.612m/s. When VELOCITY_INCREMENT is the default 3.96828326, a player sprinting
-     * into a stationary target will have a 100% bonus on their attack. The fastest horses in vanilla Minecraft
-     * have a top speed of 14.23m/s. Using the formula at the default VELOCITY_INCREMENT, this returns as a
-     * 643% percent increase in damage.
-     */
+
     protected static float VELOCITY_INCREMENT = 3.96828326F;
     /**
      * The minimum damage dealt is capped to this percentage of the original. Must be a value from 0.0 to 1.0 inclusive.
@@ -51,6 +44,9 @@ public class VelocityDamage
     public VelocityDamage() {
         MinecraftForge.EVENT_BUS.register(VelocityDamage.class);
         MinecraftForge.EVENT_BUS.register(PositionCapability.class);
+        MinecraftForge.EVENT_BUS.register(VelocityDamageConfig.class);
+
+        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, SERVER_SPEC);
     }
 
     @SubscribeEvent
