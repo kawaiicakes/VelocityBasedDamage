@@ -43,6 +43,7 @@ public class VelocityDamageConfig {
          * There is no maximum by default.
          */
         public final ForgeConfigSpec.DoubleValue maxDamagePercent;
+        public final ForgeConfigSpec.BooleanValue projectilesEnabled;
 
         protected ConfigValues(ForgeConfigSpec.Builder builder) {
             builder.push("Velocity-Based Damage Config");
@@ -65,6 +66,11 @@ public class VelocityDamageConfig {
                     .comment("The maximum bonus amount of damage, as a percentage of the original, that a buffed attack may do.")
                     .translation(key("maxDamagePercent"))
                     .defineInRange("maxDamagePercent", DEFAULT_MAXIMUM_DMG, 0, Float.MAX_VALUE);
+
+            this.projectilesEnabled = builder
+                    .comment("Whether this mod applies logic to projectiles. Currently does nothing.")
+                    .translation(key("projectilesEnabled"))
+                    .define("projectilesEnabled", false);
 
             builder.pop();
         }
