@@ -9,7 +9,7 @@ public class VelocityDamageConfig {
     // FIXME: An iron golem continually attacking me will sometimes manage to be moving away; often enough to get down to the previous minimum of 10% damage.
     public static final float DEFAULT_MINIMUM_DMG = 0.40F;
     public static final float DEFAULT_MAXIMUM_DMG = Float.MAX_VALUE;
-    public static final float DEFAULT_PROJECTILE_MULTIPLIER = 0.11F;
+    public static final float DEFAULT_PROJECTILE_MULTIPLIER = 0.16F;
 
     protected static ForgeConfigSpec SERVER_SPEC;
     protected static ConfigValues SERVER;
