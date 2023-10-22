@@ -8,6 +8,7 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -67,6 +68,18 @@ public class VelocityDamage
         LOGGER.info("Attack pre-change: " + originalDamage);
         LOGGER.info("Attack post-change: " + newDamage);
         LOGGER.info("Attacker and target were approaching each other at " + approachVelocity + "m/s.");
+    }
+
+    // Highest priority so the added velocity isn't applied *after* any other changes.
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
+        if (!(SERVER.projectilesHaveMomentum.get())) return;
+        if (!(event.getEntity() instanceof Projectile projectile)) return;
+        if (projectile.getOwner() == null) return;
+
+        LOGGER.info("Projectile velocity pre-change: " + projectile.getDeltaMovement());
+        projectile.setDeltaMovement(projectile.getDeltaMovement().add(entityVelocity(projectile.getOwner())));
+        LOGGER.info("Projectile velocity post-change: " + projectile.getDeltaMovement());
     }
 
     /**
