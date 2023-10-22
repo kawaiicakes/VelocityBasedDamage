@@ -1,6 +1,5 @@
 package io.github.kawaiicakes.velocitydamage;
 
-import com.mojang.logging.LogUtils;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -15,7 +14,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import org.slf4j.Logger;
 
 import static io.github.kawaiicakes.velocitydamage.PositionCapability.Provider.POSITION_CAP;
 import static io.github.kawaiicakes.velocitydamage.VelocityDamageConfig.SERVER;
@@ -26,7 +24,6 @@ import static net.minecraftforge.event.TickEvent.Phase.START;
 public class VelocityDamage
 {
     public static final String MOD_ID = "velocitydamage";
-    private static final Logger LOGGER = LogUtils.getLogger();
     /**
      * For some reason entities on the ground still have a negative delta Y change of this value.
      */

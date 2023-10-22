@@ -1,5 +1,6 @@
 package io.github.kawaiicakes.velocitydamage;
 
+import io.netty.util.Attribute;
 import net.minecraftforge.common.ForgeConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -10,6 +11,7 @@ public class VelocityDamageConfig {
     public static final float DEFAULT_MINIMUM_DMG = 0.40F;
     public static final float DEFAULT_MAXIMUM_DMG = Float.MAX_VALUE;
     public static final float DEFAULT_PROJECTILE_MULTIPLIER = 0.16F;
+    public static final float DEFAULT_VELOCITY_THRESHOLD = 5.8F;
 
     protected static ForgeConfigSpec SERVER_SPEC;
     protected static ConfigValues SERVER;
@@ -47,6 +49,7 @@ public class VelocityDamageConfig {
         public final ForgeConfigSpec.DoubleValue projectileMultiplier;
         public final ForgeConfigSpec.BooleanValue projectilesHaveMomentum;
         public final ForgeConfigSpec.BooleanValue wildMode;
+        public final ForgeConfigSpec.DoubleValue velocityThreshold;
 
         protected ConfigValues(ForgeConfigSpec.Builder builder) {
             builder.push("General settings");
@@ -69,6 +72,11 @@ public class VelocityDamageConfig {
                     .comment("The maximum bonus amount of damage, as a percentage of the original, that a buffed attack may do.")
                     .translation(key("maxDamagePercent"))
                     .defineInRange("maxDamagePercent", DEFAULT_MAXIMUM_DMG, 0, Float.MAX_VALUE);
+
+            this.velocityThreshold = builder
+                    .comment("The velocity over which entities slamming into walls will take damage. Set to 0 to disable this. Currently does nothing.")
+                    .translation(key("velocityThreshold"))
+                    .defineInRange("velocityThreshold", DEFAULT_VELOCITY_THRESHOLD, 0, Float.MAX_VALUE);
 
             builder.pop();
             builder.push("Projectile settings");
