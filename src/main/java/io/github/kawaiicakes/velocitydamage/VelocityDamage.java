@@ -77,8 +77,15 @@ public class VelocityDamage
         if (!(event.getEntity() instanceof Projectile projectile)) return;
         if (projectile.getOwner() == null) return;
 
+        Vec3 ownerVelocity = entityVelocity(projectile.getOwner());
+        if (ownerVelocity.equals(Vec3.ZERO)) return;
+
         LOGGER.info("Projectile velocity pre-change: " + projectile.getDeltaMovement());
-        projectile.setDeltaMovement(projectile.getDeltaMovement().add(entityVelocity(projectile.getOwner())));
+
+        double dotProduct = ownerVelocity.dot(projectile.getDeltaMovement());
+        Vec3 oneDVelocityChange = projectile.getDeltaMovement().add(dotProduct, dotProduct, dotProduct);
+        projectile.setDeltaMovement(projectile.getDeltaMovement().add(oneDVelocityChange));
+
         LOGGER.info("Projectile velocity post-change: " + projectile.getDeltaMovement());
     }
 
