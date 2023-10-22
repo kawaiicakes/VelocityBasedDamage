@@ -48,7 +48,7 @@ public class VelocityDamageConfig {
         public final ForgeConfigSpec.BooleanValue wildMode;
 
         protected ConfigValues(ForgeConfigSpec.Builder builder) {
-            builder.push("Velocity-Based Damage Config");
+            builder.push("General settings");
             this.velocityIncrement = builder
                     .comment("\"Increases\" the necessary velocity to do an arbitrary damage by a factor of this.")
                     .translation(key("velocityIncrement"))
@@ -68,6 +68,9 @@ public class VelocityDamageConfig {
                     .comment("The maximum bonus amount of damage, as a percentage of the original, that a buffed attack may do.")
                     .translation(key("maxDamagePercent"))
                     .defineInRange("maxDamagePercent", DEFAULT_MAXIMUM_DMG, 0, Float.MAX_VALUE);
+
+            builder.pop();
+            builder.push("Projectile settings");
 
             this.projectileMultiplier = builder
                     .comment("Projectile speeds (IN CALCULATIONS) are scaled to this percentage of the original value. Set to 0 to disable projectile velocity buffs.")
