@@ -68,9 +68,9 @@ public class VelocityDamageConfig {
                     .defineInRange("maxDamagePercent", DEFAULT_MAXIMUM_DMG, 0, Float.MAX_VALUE);
 
             this.projectilesEnabled = builder
-                    .comment("Whether this mod applies logic to projectiles. Currently does nothing.")
+                    .comment("Whether this mod applies logic to projectiles.")
                     .translation(key("projectilesEnabled"))
-                    .define("projectilesEnabled", false);
+                    .define("projectilesEnabled", true);
 
             builder.pop();
         }

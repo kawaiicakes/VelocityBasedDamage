@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
@@ -51,7 +52,10 @@ public class VelocityDamage
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onLivingHurt(LivingHurtEvent event) {
         if (event.isCanceled()) return;
-        if (!(event.getSource().getDirectEntity() instanceof LivingEntity attacker)) return;
+        if (event.getSource().getDirectEntity() == null) return;
+        if (!SERVER.projectilesEnabled.get() && event.getSource().getDirectEntity() instanceof Projectile) return;
+
+        Entity attacker = event.getSource().getDirectEntity();
 
         float originalDamage = event.getAmount();
 
@@ -89,7 +93,7 @@ public class VelocityDamage
      * attacker hits the target as it moves upwards relative to the attacker, a debuff is incurred. To fairly rectify
      * this, the eye positions of the entities are also considered.
      */
-    public static double calculateApproachVelocity(LivingEntity attacker, LivingEntity target) {
+    public static double calculateApproachVelocity(Entity attacker, LivingEntity target) {
         Vec3 attackerVelocity = entityVelocity(attacker);
         Vec3 targetVelocity = entityVelocity(target);
 
