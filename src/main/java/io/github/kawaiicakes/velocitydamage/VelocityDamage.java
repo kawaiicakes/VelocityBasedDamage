@@ -70,21 +70,18 @@ public class VelocityDamage
         LOGGER.info("Attacker and target were approaching each other at " + approachVelocity + "m/s.");
     }
 
-    // Highest priority so the added velocity isn't applied *after* any other changes.
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
         if (!(SERVER.projectilesHaveMomentum.get())) return;
         if (!(event.getEntity() instanceof Projectile projectile)) return;
         if (projectile.getOwner() == null) return;
 
-        Vec3 ownerVelocity = entityVelocity(projectile.getOwner());
+        Vec3 ownerVelocity = entityVelocity(projectile.getOwner()).scale((double) 1 / 20);
         if (ownerVelocity.equals(Vec3.ZERO)) return;
 
-        LOGGER.info("Projectile velocity pre-change: " + projectile.getDeltaMovement());
+        // On spawn the arrow has 0 delta movement...
 
-        double dotProduct = ownerVelocity.dot(projectile.getDeltaMovement());
-        Vec3 oneDVelocityChange = projectile.getDeltaMovement().add(dotProduct, dotProduct, dotProduct);
-        projectile.setDeltaMovement(projectile.getDeltaMovement().add(oneDVelocityChange));
+        projectile.setDeltaMovement(projectile.getDeltaMovement().add(ownerVelocity));
 
         LOGGER.info("Projectile velocity post-change: " + projectile.getDeltaMovement());
     }

@@ -10,7 +10,6 @@ public class VelocityDamageConfig {
     public static final float DEFAULT_MINIMUM_DMG = 0.40F;
     public static final float DEFAULT_MAXIMUM_DMG = Float.MAX_VALUE;
     public static final float DEFAULT_PROJECTILE_MULTIPLIER = 0.11F;
-    public static final float DEFAULT_PROJECTILE_DEVIATION = 0.23F;
 
     protected static ForgeConfigSpec SERVER_SPEC;
     protected static ConfigValues SERVER;
@@ -47,7 +46,6 @@ public class VelocityDamageConfig {
         public final ForgeConfigSpec.DoubleValue maxDamagePercent;
         public final ForgeConfigSpec.DoubleValue projectileMultiplier;
         public final ForgeConfigSpec.BooleanValue projectilesHaveMomentum;
-        public final ForgeConfigSpec.DoubleValue projectileDeviation;
         public final ForgeConfigSpec.BooleanValue wildMode;
 
         protected ConfigValues(ForgeConfigSpec.Builder builder) {
@@ -81,14 +79,9 @@ public class VelocityDamageConfig {
                     .defineInRange("projectileMultiplier", DEFAULT_PROJECTILE_MULTIPLIER, 0, 1.00);
 
             this.projectilesHaveMomentum = builder
-                    .comment("This value determines how much a projectile will deviate from its intended target due to the above option. The same damage buff/debuff will always be conferred.")
+                    .comment("If true, projectiles have the velocity of the entity who fired it added.")
                     .translation(key("projectilesHaveMomentum"))
                     .define("projectilesHaveMomentum", true);
-
-            this.projectileDeviation = builder
-                    .comment("This value determines how much a projectile will deviate from its intended target due to the above option. The same damage buff/debuff will always be conferred.")
-                    .translation(key("projectileDeviation"))
-                    .defineInRange("projectileDeviation", DEFAULT_PROJECTILE_DEVIATION, 0, 1.0);
 
             this.wildMode = builder
                     .comment("Disables any nerfs and causes other assorted mayhem if enabled. (e.g. arrows retain the vanilla speed damage bonus) Currently does nothing.")
