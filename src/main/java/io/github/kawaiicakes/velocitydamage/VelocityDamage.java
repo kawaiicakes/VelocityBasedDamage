@@ -53,7 +53,7 @@ public class VelocityDamage
     public static void onLivingHurt(LivingHurtEvent event) {
         if (event.isCanceled()) return;
         if (event.getSource().getDirectEntity() == null) return;
-        if (!SERVER.projectilesEnabled.get() && event.getSource().getDirectEntity() instanceof Projectile) return;
+        if (event.getSource().getDirectEntity() instanceof Projectile && SERVER.projectileMultiplier.get() == 0) return;
 
         Entity attacker = event.getSource().getDirectEntity();
 
@@ -94,7 +94,10 @@ public class VelocityDamage
      * this, the eye positions of the entities are also considered.
      */
     public static double calculateApproachVelocity(Entity attacker, LivingEntity target) {
-        Vec3 attackerVelocity = entityVelocity(attacker);
+        Vec3 attackerVelocity =
+                attacker instanceof Projectile projectile
+                ? entityVelocity(projectile).scale(SERVER.projectileMultiplier.get())
+                : entityVelocity(attacker);
         Vec3 targetVelocity = entityVelocity(target);
 
         if (attackerVelocity.length() == 0 && targetVelocity.length() == 0) return 0;

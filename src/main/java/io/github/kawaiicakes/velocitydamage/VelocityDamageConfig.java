@@ -9,6 +9,7 @@ public class VelocityDamageConfig {
     // FIXME: An iron golem continually attacking me will sometimes manage to be moving away; often enough to get down to the previous minimum of 10% damage.
     public static final float DEFAULT_MINIMUM_DMG = 0.40F;
     public static final float DEFAULT_MAXIMUM_DMG = Float.MAX_VALUE;
+    public static final float DEFAULT_PROJECTILE_MULTIPLIER = 0.11F;
 
     protected static ForgeConfigSpec SERVER_SPEC;
     protected static ConfigValues SERVER;
@@ -43,7 +44,8 @@ public class VelocityDamageConfig {
          * There is no maximum by default.
          */
         public final ForgeConfigSpec.DoubleValue maxDamagePercent;
-        public final ForgeConfigSpec.BooleanValue projectilesEnabled;
+        public final ForgeConfigSpec.DoubleValue projectileMultiplier;
+        public final ForgeConfigSpec.BooleanValue wildMode;
 
         protected ConfigValues(ForgeConfigSpec.Builder builder) {
             builder.push("Velocity-Based Damage Config");
@@ -67,10 +69,15 @@ public class VelocityDamageConfig {
                     .translation(key("maxDamagePercent"))
                     .defineInRange("maxDamagePercent", DEFAULT_MAXIMUM_DMG, 0, Float.MAX_VALUE);
 
-            this.projectilesEnabled = builder
-                    .comment("Whether this mod applies logic to projectiles.")
-                    .translation(key("projectilesEnabled"))
-                    .define("projectilesEnabled", true);
+            this.projectileMultiplier = builder
+                    .comment("Projectile speeds (IN CALCULATIONS) are scaled to this percentage of the original value. Set to 0 to disable projectile velocity buffs.")
+                    .translation(key("projectileMultiplier"))
+                    .defineInRange("projectileMultiplier", DEFAULT_PROJECTILE_MULTIPLIER, 0, 1.00);
+
+            this.wildMode = builder
+                    .comment("Disables any nerfs and causes other assorted mayhem if enabled. (e.g. arrows retain the vanilla speed damage bonus) Currently does nothing.")
+                    .translation(key("wildMode"))
+                    .define("wildMode", true);
 
             builder.pop();
         }
