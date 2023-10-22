@@ -64,10 +64,6 @@ public class VelocityDamage
         float newDamage = calculateNewDamage((float) approachVelocity, originalDamage);
 
         event.setAmount(newDamage);
-
-        LOGGER.info("Attack pre-change: " + originalDamage);
-        LOGGER.info("Attack post-change: " + newDamage);
-        LOGGER.info("Attacker and target were approaching each other at " + approachVelocity + "m/s.");
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -79,11 +75,7 @@ public class VelocityDamage
         Vec3 ownerVelocity = entityVelocity(projectile.getOwner()).scale((double) 1 / 20);
         if (ownerVelocity.equals(Vec3.ZERO)) return;
 
-        // On spawn the arrow has 0 delta movement...
-
         projectile.setDeltaMovement(projectile.getDeltaMovement().add(ownerVelocity));
-
-        LOGGER.info("Projectile velocity post-change: " + projectile.getDeltaMovement());
     }
 
     /**
@@ -96,6 +88,7 @@ public class VelocityDamage
     public static Vec3 entityVelocity(Entity entity) {
         if (entity instanceof ServerPlayer player) {
             PositionCapability position = player.getCapability(POSITION_CAP).orElseThrow(IllegalStateException::new);
+            if (position.currentPosition == null) return Vec3.ZERO;
             return position.currentPosition.subtract(position.oldPosition).scale(20);
         }
 
