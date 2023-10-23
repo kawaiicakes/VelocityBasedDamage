@@ -21,7 +21,9 @@ import static io.github.kawaiicakes.velocitydamage.VelocityDamage.MOD_ID;
 public class PositionCapability {
 
     public static final ResourceLocation POSITION_CAPABILITY_ID = new ResourceLocation(MOD_ID, "delta_position");
+    @Nullable
     public Vec3 oldPosition;
+    @Nullable
     public Vec3 currentPosition;
 
     public void tickPosition(ServerPlayer player) {
