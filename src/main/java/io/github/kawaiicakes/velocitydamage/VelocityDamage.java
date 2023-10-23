@@ -1,13 +1,22 @@
 package io.github.kawaiicakes.velocitydamage;
 
+import com.mojang.logging.LogUtils;
+import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ambient.Bat;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -37,7 +46,6 @@ public class VelocityDamage
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, SERVER_SPEC);
     }
 
-    /* stuff lol
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onLivingTick(LivingEvent.LivingTickEvent event) {
         if (SERVER.velocityThreshold.get() == 0) return;
@@ -46,25 +54,28 @@ public class VelocityDamage
         if (entity.isDeadOrDying()) return;
         if (entity.level.isClientSide()) return;
 
-        Vec3 velocity = entityVelocity(entity);
-        if (velocity.horizontalDistance() <= SERVER.velocityThreshold.get()) return;
-
-        // don't add onto elytra damage lmao. don't check on entity since other mods might access the field
-        if (entity instanceof Player player && player.isFallFlying()) return;
+        Vec3 velocity = entityVelocity(entity).scale((double) 1 / 20);
+        if (velocity.scale(20).horizontalDistance() <= SERVER.velocityThreshold.get()) return;
 
         //noinspection SuspiciousNameCombination
-        if (Mth.equal(velocity.x, entity.collide(velocity).x) || Mth.equal(velocity.z, entity.collide(velocity).z)) return;
+        if (Mth.equal(velocity.x, entity.collide(velocity).x) && Mth.equal(velocity.z, entity.collide(velocity).z)) return;
 
-        double beyondThresholdDeltaV =
-                entity.collide(velocity).subtract(velocity).horizontalDistance() - SERVER.velocityThreshold.get();
+        LogUtils.getLogger().info("Entity " + entity + " collided at " + velocity.scale(20).horizontalDistance() + " m/s");
+        //1.035947..., -12.65757... when collide is called
+        //0, -6.900030097... when L62 is called? hm...
+        //0, -6.900030097... is called again in collide
 
-        SoundEvent collisionSound =
-                beyondThresholdDeltaV > 4 ? entity.getFallSounds().big() : entity.getFallSounds().small();
-        entity.playSound(collisionSound, 1.0F, 1.0F);
+        //float beyondThresholdDeltaV =
+                //(float) ((entity.collide(xzVelocity).subtract(xzVelocity).horizontalDistance()) * 20 - SERVER.velocityThreshold.get());
+
+        //if (beyondThresholdDeltaV <= 0) return;
+
+        SoundEvent collisionSound = SoundEvents.PLAYER_ATTACK_CRIT;
+                //beyondThresholdDeltaV > 4 ? entity.getFallSounds().big() : entity.getFallSounds().small();
+        entity.playSound(collisionSound, 1.3F, 0.7F);
         // TODO: configurability?
-        entity.hurt(DamageSource.FLY_INTO_WALL, (float) beyondThresholdDeltaV);
+        entity.hurt(DamageSource.FLY_INTO_WALL, (float) velocity.scale(20).horizontalDistance());
     }
-     */
 
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {

@@ -74,7 +74,7 @@ public class VelocityDamageConfig {
                     .defineInRange("maxDamagePercent", DEFAULT_MAXIMUM_DMG, 0, Float.MAX_VALUE);
 
             this.velocityThreshold = builder
-                    .comment("The velocity over which entities slamming into walls will take damage. Set to 0 to disable this. Currently does nothing.")
+                    .comment("The velocity over which entities slamming into walls will take damage. Set to 0 to disable this.")
                     .translation(key("velocityThreshold"))
                     .defineInRange("velocityThreshold", DEFAULT_VELOCITY_THRESHOLD, 0, Float.MAX_VALUE);
 
