@@ -1,7 +1,6 @@
 package io.github.kawaiicakes.velocitydamage;
 
 import com.mojang.logging.LogUtils;
-import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -10,7 +9,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ambient.Bat;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
@@ -53,6 +51,7 @@ public class VelocityDamage
         LivingEntity entity = event.getEntity();
         if (entity.isDeadOrDying()) return;
         if (entity.level.isClientSide()) return;
+        if (entity instanceof Bat) return;
 
         Vec3 velocity = entityVelocity(entity).scale((double) 1 / 20);
         if (velocity.scale(20).horizontalDistance() <= SERVER.velocityThreshold.get()) return;
