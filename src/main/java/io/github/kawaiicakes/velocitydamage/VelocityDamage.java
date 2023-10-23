@@ -21,6 +21,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import static io.github.kawaiicakes.velocitydamage.PositionCapability.Provider.POSITION_CAP;
 import static io.github.kawaiicakes.velocitydamage.VelocityDamageConfig.SERVER;
@@ -42,6 +44,11 @@ public class VelocityDamage
         MinecraftForge.EVENT_BUS.register(VelocityDamageConfig.class);
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, SERVER_SPEC);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(VelocityDamage::onCommonSetup);
+    }
+
+    private static void onCommonSetup(final FMLCommonSetupEvent event) {
+        VelocityPackets.register();
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
