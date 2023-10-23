@@ -37,6 +37,35 @@ public class VelocityDamage
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, SERVER_SPEC);
     }
 
+    /* stuff lol
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onLivingTick(LivingEvent.LivingTickEvent event) {
+        if (SERVER.velocityThreshold.get() == 0) return;
+
+        LivingEntity entity = event.getEntity();
+        if (entity.isDeadOrDying()) return;
+        if (entity.level.isClientSide()) return;
+
+        Vec3 velocity = entityVelocity(entity);
+        if (velocity.horizontalDistance() <= SERVER.velocityThreshold.get()) return;
+
+        // don't add onto elytra damage lmao. don't check on entity since other mods might access the field
+        if (entity instanceof Player player && player.isFallFlying()) return;
+
+        //noinspection SuspiciousNameCombination
+        if (Mth.equal(velocity.x, entity.collide(velocity).x) || Mth.equal(velocity.z, entity.collide(velocity).z)) return;
+
+        double beyondThresholdDeltaV =
+                entity.collide(velocity).subtract(velocity).horizontalDistance() - SERVER.velocityThreshold.get();
+
+        SoundEvent collisionSound =
+                beyondThresholdDeltaV > 4 ? entity.getFallSounds().big() : entity.getFallSounds().small();
+        entity.playSound(collisionSound, 1.0F, 1.0F);
+        // TODO: configurability?
+        entity.hurt(DamageSource.FLY_INTO_WALL, (float) beyondThresholdDeltaV);
+    }
+     */
+
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (!(event.player instanceof ServerPlayer player)) return;
@@ -51,6 +80,7 @@ public class VelocityDamage
     public static void onLivingHurt(LivingHurtEvent event) {
         if (event.isCanceled()) return;
         if (event.getSource().getDirectEntity() == null) return;
+        if (event.getSource().getDirectEntity().level.isClientSide || event.getEntity().level.isClientSide) return;
         if (event.getSource().getDirectEntity() instanceof Projectile && SERVER.projectileMultiplier.get() == 0) return;
 
         Entity attacker = event.getSource().getDirectEntity();
@@ -66,7 +96,7 @@ public class VelocityDamage
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
         if (!(SERVER.projectilesHaveMomentum.get())) return;
-        if (!(event.getEntity() instanceof Projectile projectile)) return;
+        if (!(event.getEntity() instanceof Projectile projectile) || projectile.level.isClientSide) return;
         if (projectile.getOwner() == null) return;
 
         Vec3 ownerVelocity = entityVelocity(projectile.getOwner()).scale((double) 1 / 20);
@@ -86,6 +116,7 @@ public class VelocityDamage
         if (entity instanceof ServerPlayer player) {
             PositionCapability position = player.getCapability(POSITION_CAP).orElseThrow(IllegalStateException::new);
             if (position.currentPosition == null) return Vec3.ZERO;
+            if (position.oldPosition == null) return Vec3.ZERO;
             return position.currentPosition.subtract(position.oldPosition).scale(20);
         }
 
