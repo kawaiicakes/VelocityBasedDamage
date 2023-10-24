@@ -92,7 +92,7 @@ public class VelocityDamageConfig {
                     .define("projectilesHaveMomentum", true);
 
             this.wildMode = builder
-                    .comment("Disables any nerfs and causes other assorted mayhem if enabled. (e.g. arrows retain the vanilla speed damage bonus) Currently does nothing.")
+                    .comment("Disables any nerfs and causes other assorted mayhem if enabled. (e.g. arrows retain the vanilla speed damage bonus)")
                     .translation(key("wildMode"))
                     .define("wildMode", true);
 
