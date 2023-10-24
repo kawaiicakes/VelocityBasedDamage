@@ -132,8 +132,6 @@ public class VelocityDamage
     public static Vec3 entityVelocity(Entity entity) {
         if (entity instanceof ServerPlayer player) {
             PositionCapability position = player.getCapability(POSITION_CAP).orElseThrow(IllegalStateException::new);
-            if (position.currentPosition == null) return Vec3.ZERO;
-            if (position.oldPosition == null) return Vec3.ZERO;
             return position.currentPosition.subtract(position.oldPosition).scale(20);
         }
 
