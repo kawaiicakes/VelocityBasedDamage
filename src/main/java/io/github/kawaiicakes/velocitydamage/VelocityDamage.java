@@ -1,12 +1,14 @@
 package io.github.kawaiicakes.velocitydamage;
 
 import com.mojang.logging.LogUtils;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ambient.Bat;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.phys.Vec3;
@@ -58,7 +60,7 @@ public class VelocityDamage
         LivingEntity entity = event.getEntity();
         if (entity.isDeadOrDying()) return;
         if (entity.level.isClientSide()) return;
-        if (entity instanceof Bat) return;
+        if (entity instanceof Bat || entity instanceof Player) return;
 
         Vec3 velocity = entityVelocity(entity).scale((double) 1 / 20);
         if (velocity.scale(20).horizontalDistance() <= SERVER.velocityThreshold.get()) return;
@@ -75,11 +77,17 @@ public class VelocityDamage
 
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (!(event.player instanceof ServerPlayer player)) return;
         if (!event.phase.equals(START)) return;
 
-        player.getCapability(POSITION_CAP)
-                .ifPresent(position -> position.tickPosition(player));
+        if (event.player instanceof LocalPlayer player) {
+            VelocityPackets.sendToServer(new VelocityPackets.C2SVelocityPacket(player.getDeltaMovement().add(0, RESTING_Y_DELTA, 0)));
+            return;
+        }
+
+        if (event.player instanceof ServerPlayer player) {
+            player.getCapability(POSITION_CAP)
+                    .ifPresent(position -> position.tickPosition(player));
+        }
     }
 
     // Lowest priority so other mods have a chance to change the damage prior to this
