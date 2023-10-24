@@ -75,7 +75,9 @@ public class VelocityPackets {
                         Math.min(this.velocity.horizontalDistance(), naiveVelocity.horizontalDistance()) == this.velocity.horizontalDistance()
                                 ? this.velocity : naiveVelocity;
 
-                if (preferredValue.scale(20).horizontalDistance() <= SERVER.velocityThreshold.get()) return;
+                LOGGER.info(preferredValue.scale(20).horizontalDistance() + " m/s");
+
+                if (preferredValue.scale(20).horizontalDistance() <= SERVER.velocityThreshold.get() + 1) return;
 
                 //noinspection SuspiciousNameCombination
                 if (Mth.equal(preferredValue.x, context.getSender().collide(preferredValue).x) && Mth.equal(preferredValue.z, context.getSender().collide(preferredValue).z)) return;
@@ -84,7 +86,7 @@ public class VelocityPackets {
 
                 context.getSender().playSound(PLAYER_ATTACK_CRIT, 3.2F, 0.7F);
                 // TODO: configurability?
-                context.getSender().hurt(DamageSource.FLY_INTO_WALL, (float) ((float) velocity.scale(20).horizontalDistance() - SERVER.velocityThreshold.get()));
+                context.getSender().hurt(DamageSource.FLY_INTO_WALL, (float) ((float) preferredValue.scale(20).horizontalDistance() - SERVER.velocityThreshold.get()));
             });
         }
     }

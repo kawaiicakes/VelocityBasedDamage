@@ -80,7 +80,8 @@ public class VelocityDamage
         if (!event.phase.equals(START)) return;
 
         if (event.player instanceof LocalPlayer player) {
-            VelocityPackets.sendToServer(new VelocityPackets.C2SVelocityPacket(player.getDeltaMovement().add(0, RESTING_Y_DELTA, 0)));
+            double yDelta = player.onGround ? RESTING_Y_DELTA : 0;
+            VelocityPackets.sendToServer(new VelocityPackets.C2SVelocityPacket(player.getDeltaMovement().add(0, yDelta, 0)));
             return;
         }
 
