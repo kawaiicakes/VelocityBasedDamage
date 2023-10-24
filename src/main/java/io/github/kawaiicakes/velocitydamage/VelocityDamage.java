@@ -53,6 +53,9 @@ public class VelocityDamage
         VelocityPackets.register();
     }
 
+    // TODO: vehicles take damage
+    // TODO: entity velocity is added onto knockback
+    // TODO: entities hitting walls are bounced at angle of incidence
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onLivingTick(LivingEvent.LivingTickEvent event) {
         if (SERVER.velocityThreshold.get() == 0) return;
