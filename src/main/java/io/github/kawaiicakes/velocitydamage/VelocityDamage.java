@@ -2,8 +2,6 @@ package io.github.kawaiicakes.velocitydamage;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -27,6 +25,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import static io.github.kawaiicakes.velocitydamage.PositionCapability.Provider.POSITION_CAP;
 import static io.github.kawaiicakes.velocitydamage.VelocityDamageConfig.SERVER;
 import static io.github.kawaiicakes.velocitydamage.VelocityDamageConfig.SERVER_SPEC;
+import static net.minecraft.sounds.SoundEvents.PLAYER_ATTACK_CRIT;
 import static net.minecraftforge.event.TickEvent.Phase.START;
 
 @Mod(VelocityDamage.MOD_ID)
@@ -67,20 +66,10 @@ public class VelocityDamage
         if (Mth.equal(velocity.x, entity.collide(velocity).x) && Mth.equal(velocity.z, entity.collide(velocity).z)) return;
 
         LogUtils.getLogger().info("Entity " + entity + " collided at " + velocity.scale(20).horizontalDistance() + " m/s");
-        //1.035947..., -12.65757... when collide is called
-        //0, -6.900030097... when L62 is called? hm...
-        //0, -6.900030097... is called again in collide
 
-        //float beyondThresholdDeltaV =
-                //(float) ((entity.collide(xzVelocity).subtract(xzVelocity).horizontalDistance()) * 20 - SERVER.velocityThreshold.get());
-
-        //if (beyondThresholdDeltaV <= 0) return;
-
-        SoundEvent collisionSound = SoundEvents.PLAYER_ATTACK_CRIT;
-                //beyondThresholdDeltaV > 4 ? entity.getFallSounds().big() : entity.getFallSounds().small();
-        entity.playSound(collisionSound, 1.3F, 0.7F);
+        entity.playSound(PLAYER_ATTACK_CRIT, 3.2F, 0.7F);
         // TODO: configurability?
-        entity.hurt(DamageSource.FLY_INTO_WALL, (float) velocity.scale(20).horizontalDistance());
+        entity.hurt(DamageSource.FLY_INTO_WALL, (float) ((float) velocity.scale(20).horizontalDistance() - SERVER.velocityThreshold.get()));
     }
 
     @SubscribeEvent
