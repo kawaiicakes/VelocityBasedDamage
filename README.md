@@ -8,7 +8,7 @@ ___
 ![Game Version](https://img.shields.io/badge/game_version-1.19.2-ffe8e9?style=for-the-badge&labelColor=ffced2)
 ![Environment](https://img.shields.io/badge/environment-server-ffe8e9?style=for-the-badge&labelColor=ffced2)
 
-![CurseForge Downloads](https://img.shields.io/curseforge/dt/906592?style=for-the-badge&logo=curseforge&labelColor=ffceea&color=ffe8f5&link=https://www.curseforge.com/minecraft/mc-mods/velocity-based-damage-deluxe)
+![CurseForge Downloads](https://img.shields.io/curseforge/dt/927154?style=for-the-badge&logo=curseforge&labelColor=ffceea&color=ffe8f5&link=https://www.curseforge.com/minecraft/mc-mods/velocity-based-damage-deluxe)
 ![GitHub issues](https://img.shields.io/github/issues/kawaiicakes/NoFortnite?style=for-the-badge&logo=github&labelColor=ffceea&color=ffe8f5&link=https://github.com/kawaiicakes/VelocityBasedDamage/issues)
 ![Software License](https://img.shields.io/badge/license-MIT-ffe8f5?style=for-the-badge&labelColor=ffceea&link=https://github.com/kawaiicakes/VelocityBasedDamage/blob/main/LICENSE)
 
