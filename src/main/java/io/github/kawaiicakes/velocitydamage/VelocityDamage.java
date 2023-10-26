@@ -88,8 +88,6 @@ public class VelocityDamage
         double approachVelocity = calculateApproachVelocity(attacker, event.getEntity());
         float newDamage = calculateNewDamage((float) approachVelocity, originalDamage);
 
-        LogUtils.getLogger().info("Attacker and target were approaching each other at " + approachVelocity + "m/s.");
-
         event.setAmount(newDamage);
     }
 
