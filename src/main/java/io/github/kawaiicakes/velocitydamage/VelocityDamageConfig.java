@@ -6,11 +6,11 @@ import org.apache.commons.lang3.tuple.Pair;
 
 public class VelocityDamageConfig {
     public static final float DEFAULT_SQUASH = 6.90F;
-    public static final float DEFAULT_EXPONENTIATION = 3.20F;
+    public static final float DEFAULT_EXPONENTIATION = 1.20F;
     // FIXME: An iron golem continually attacking me will sometimes manage to be moving away; often enough to get down to the previous minimum of 10% damage.
     public static final float DEFAULT_MINIMUM_DMG = 0.40F;
     public static final float DEFAULT_MAXIMUM_DMG = Float.MAX_VALUE;
-    public static final float DEFAULT_PROJECTILE_MULTIPLIER = 0.16F;
+    public static final float DEFAULT_PROJECTILE_MULTIPLIER = 1.00F;
     public static final float DEFAULT_VELOCITY_THRESHOLD = 5.8F;
 
     protected static ForgeConfigSpec SERVER_SPEC;
@@ -82,7 +82,7 @@ public class VelocityDamageConfig {
             builder.push("Projectile settings");
 
             this.projectileMultiplier = builder
-                    .comment("Projectile speeds (IN CALCULATIONS) are scaled to this percentage of the original value. Set to 0 to disable projectile velocity buffs.")
+                    .comment("Projectile speeds (IN CALCULATIONS) are subtracted by this percentage of the original value. Set to 0 to disable projectile velocity buffs.")
                     .translation(key("projectileMultiplier"))
                     .defineInRange("projectileMultiplier", DEFAULT_PROJECTILE_MULTIPLIER, 0, 1.00);
 
