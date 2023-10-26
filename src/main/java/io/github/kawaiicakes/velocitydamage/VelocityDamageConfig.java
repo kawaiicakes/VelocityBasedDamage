@@ -10,7 +10,7 @@ public class VelocityDamageConfig {
     public static final float DEFAULT_MINIMUM_DMG = 0.30F;
     public static final float DEFAULT_MAXIMUM_DMG = Float.MAX_VALUE;
     public static final float DEFAULT_PROJECTILE_MULTIPLIER = 1.00F;
-    public static final float DEFAULT_VELOCITY_THRESHOLD = 5.8F;
+    public static final float DEFAULT_VELOCITY_THRESHOLD = 6.3F;
 
     protected static ForgeConfigSpec SERVER_SPEC;
     protected static ConfigValues SERVER;
@@ -54,26 +54,31 @@ public class VelocityDamageConfig {
             builder.push("General settings");
             this.velocityIncrement = builder
                     .comment("\"Increases\" the necessary velocity to do an arbitrary damage by a factor of this.")
+                    .comment("Default: 6.90")
                     .translation(key("velocityIncrement"))
                     .defineInRange("velocityIncrement", DEFAULT_SQUASH, 1, Float.MAX_VALUE);
 
             this.exponentiationConstant = builder
                     .comment("Changes the power of the damage calculation function. Determines growth curve.")
+                    .comment("Default: 1.40")
                     .translation(key("exponentiationConstant"))
                     .defineInRange("exponentiationConstant", DEFAULT_EXPONENTIATION, 0, Float.MAX_VALUE);
 
             this.minDamagePercent = builder
                     .comment("The minimum amount of damage, as a percentage of the original, that a debuffed attack may do.")
+                    .comment("Default: 0.30")
                     .translation(key("minDamagePercent"))
                     .defineInRange("minDamagePercent", DEFAULT_MINIMUM_DMG, 0, 1.0);
 
             this.maxDamagePercent = builder
                     .comment("The maximum bonus amount of damage, as a percentage of the original, that a buffed attack may do.")
+                    .comment(String.valueOf(Float.MAX_VALUE))
                     .translation(key("maxDamagePercent"))
                     .defineInRange("maxDamagePercent", DEFAULT_MAXIMUM_DMG, 0, Float.MAX_VALUE);
 
             this.velocityThreshold = builder
                     .comment("The velocity over which entities slamming into walls will take damage. Set to 0 to disable this.")
+                    .comment("Default: 6.3")
                     .translation(key("velocityThreshold"))
                     .defineInRange("velocityThreshold", DEFAULT_VELOCITY_THRESHOLD, 0, Float.MAX_VALUE);
 
@@ -82,16 +87,19 @@ public class VelocityDamageConfig {
 
             this.projectileMultiplier = builder
                     .comment("Projectile speeds (IN CALCULATIONS) are subtracted by this percentage of the original value. Set to 0 for crazy damage.")
+                    .comment("Default: 1.00")
                     .translation(key("projectileMultiplier"))
                     .defineInRange("projectileMultiplier", DEFAULT_PROJECTILE_MULTIPLIER, 0, 1.00);
 
             this.projectilesHaveMomentum = builder
                     .comment("If true, projectiles have the velocity of the entity who fired it added.")
+                    .comment("Default: true")
                     .translation(key("projectilesHaveMomentum"))
                     .define("projectilesHaveMomentum", true);
 
             this.wildMode = builder
                     .comment("Disables any nerfs and causes other assorted mayhem if enabled. (e.g. arrows retain the vanilla speed damage bonus)")
+                    .comment("Default: true")
                     .translation(key("wildMode"))
                     .define("wildMode", true);
 
