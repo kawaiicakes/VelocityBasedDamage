@@ -6,7 +6,7 @@ issueTrackerURL="https://github.com/kawaiicakes/VelocityBasedDamage/issues"
 [[mods]]
 modId="velocitydamage"
 version='1.19.2-1.0.0-beta'
-displayName="Velocity-Based Damage"
+displayName="Velocity-Based Damage Deluxe"
 displayURL="https://github.com/kawaiicakes/VelocityBasedDamage/"
 logoFile="velocitydamage.png"
 credits="Thanks to [pitbox46](https://legacy.curseforge.com/members/pitbox46/projects) for the concept."
