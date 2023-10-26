@@ -1,7 +1,5 @@
 package io.github.kawaiicakes.velocitydamage;
 
-import com.mojang.logging.LogUtils;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
@@ -22,8 +20,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import static io.github.kawaiicakes.velocitydamage.PositionCapability.Provider.POSITION_CAP;
 import static io.github.kawaiicakes.velocitydamage.VelocityDamageConfig.SERVER;
@@ -46,16 +42,8 @@ public class VelocityDamage
         MinecraftForge.EVENT_BUS.register(VelocityDamageConfig.class);
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, SERVER_SPEC);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(VelocityDamage::onCommonSetup);
     }
 
-    private static void onCommonSetup(final FMLCommonSetupEvent event) {
-        VelocityPackets.register();
-    }
-
-    // TODO: vehicles take damage
-    // TODO: entity velocity is added onto knockback
-    // TODO: entities hitting walls are bounced at angle of incidence
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onLivingTick(LivingEvent.LivingTickEvent event) {
         if (SERVER.velocityThreshold.get() == 0) return;
@@ -71,27 +59,16 @@ public class VelocityDamage
         //noinspection SuspiciousNameCombination
         if (Mth.equal(velocity.x, entity.collide(velocity).x) && Mth.equal(velocity.z, entity.collide(velocity).z)) return;
 
-        LogUtils.getLogger().info("Entity " + entity + " collided at " + velocity.scale(20).horizontalDistance() + " m/s");
-
         entity.playSound(PLAYER_ATTACK_CRIT, 3.2F, 0.7F);
-        // TODO: configurability?
         entity.hurt(DamageSource.FLY_INTO_WALL, (float) ((float) velocity.scale(20).horizontalDistance() - SERVER.velocityThreshold.get()));
     }
 
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
+        if (!(event.player instanceof ServerPlayer player)) return;
         if (!event.phase.equals(START)) return;
-
-        if (event.player instanceof LocalPlayer player) {
-            double yDelta = player.onGround ? RESTING_Y_DELTA : 0;
-            VelocityPackets.sendToServer(new VelocityPackets.C2SVelocityPacket(player.getDeltaMovement().add(0, yDelta, 0)));
-            return;
-        }
-
-        if (event.player instanceof ServerPlayer player) {
-            player.getCapability(POSITION_CAP)
-                    .ifPresent(position -> position.tickPosition(player));
-        }
+        player.getCapability(POSITION_CAP)
+                .ifPresent(position -> position.tickPosition(player));
     }
 
     // Lowest priority so other mods have a chance to change the damage prior to this
@@ -161,7 +138,6 @@ public class VelocityDamage
         Vec3 attackerPosition = attacker.position();
         Vec3 targetPosition = target.position();
 
-        // TODO: handle cases where a very small entity attacks a very large one?
         if (targetVelocity.y() - attackerVelocity.y() >= 0 && target.position().y() > attacker.position().y()) attackerPosition = attacker.getEyePosition();
         if (targetVelocity.y() - attackerVelocity.y() <= 0 && target.position().y() < attacker.position().y()) targetPosition = target.getEyePosition();
 
