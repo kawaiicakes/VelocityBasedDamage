@@ -1,5 +1,6 @@
 package io.github.kawaiicakes.velocitydamage;
 
+import com.mojang.logging.LogUtils;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
@@ -87,6 +88,8 @@ public class VelocityDamage
         double approachVelocity = calculateApproachVelocity(attacker, event.getEntity());
         float newDamage = calculateNewDamage((float) approachVelocity, originalDamage);
 
+        LogUtils.getLogger().info("Attacker and target were approaching each other at " + approachVelocity + "m/s.");
+
         event.setAmount(newDamage);
     }
 
@@ -129,7 +132,7 @@ public class VelocityDamage
     public static double calculateApproachVelocity(Entity attacker, LivingEntity target) {
         Vec3 attackerVelocity =
                 attacker instanceof Projectile projectile
-                ? entityVelocity(projectile).scale(SERVER.projectileMultiplier.get())
+                ? entityVelocity(projectile).subtract(entityVelocity(projectile).scale(SERVER.projectileMultiplier.get()))
                 : entityVelocity(attacker);
         Vec3 targetVelocity = entityVelocity(target);
 

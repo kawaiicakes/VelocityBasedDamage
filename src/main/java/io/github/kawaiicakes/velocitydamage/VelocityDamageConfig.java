@@ -82,7 +82,7 @@ public class VelocityDamageConfig {
             builder.push("Projectile settings");
 
             this.projectileMultiplier = builder
-                    .comment("Projectile speeds (IN CALCULATIONS) are subtracted by this percentage of the original value. Set to 0 to disable projectile velocity buffs.")
+                    .comment("Projectile speeds (IN CALCULATIONS) are subtracted by this percentage of the original value. Set to 0 for crazy damage.")
                     .translation(key("projectileMultiplier"))
                     .defineInRange("projectileMultiplier", DEFAULT_PROJECTILE_MULTIPLIER, 0, 1.00);
 
