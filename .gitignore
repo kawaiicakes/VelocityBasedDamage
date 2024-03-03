@@ -19,7 +19,9 @@ build
 
 # other
 eclipse
-run
+forge/run
+/fabric/run/
+/forge/run/
 
 # Files from Forge MDK
 forge*changelog.txt

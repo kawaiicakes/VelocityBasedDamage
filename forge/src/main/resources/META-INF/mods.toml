@@ -5,7 +5,7 @@ issueTrackerURL="https://github.com/kawaiicakes/VelocityBasedDamage/issues"
 
 [[mods]]
 modId="velocitydamage"
-version='1.19.2-1.0.0'
+version='1.19.2-1.1.0'
 displayName="Velocity-Based Damage"
 displayURL="https://github.com/kawaiicakes/VelocityBasedDamage/"
 logoFile="velocitydamage.png"
@@ -27,3 +27,9 @@ Simple mod multiplying damage based on velocity of the attacker relative to the 
     versionRange="[1.19.2,1.20)"
     ordering="NONE"
     side="BOTH"
+[[dependencies.velocitydamage]]
+modId = "architectury"
+mandatory = true
+versionRange = "[6.5.85,)"
+ordering = "AFTER"
+side = "BOTH"

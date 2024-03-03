@@ -1,4 +1,4 @@
-package io.github.kawaiicakes.velocitydamage.mixins;
+package io.github.kawaiicakes.velocitydamage.mixin.forge;
 
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import org.spongepowered.asm.mixin.Mixin;

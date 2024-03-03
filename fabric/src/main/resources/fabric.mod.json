@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "velocitydamage",
+  "version": "${version}",
+  "name": "Velocity-Based Damage",
+  "description": "Simple mod multiplying damage based on velocity of the attacker relative to the target.",
+  "authors": [
+    "Me!"
+  ],
+  "contact": {
+    "sources": "https://github.com/kawaiicakes/VelocityBasedDamage/"
+  },
+  "license": "MIT",
+  "icon": "assets/velocitydamage/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "io.github.kawaiicakes.velocitydamage.fabric.VelocityDamageFabric"
+    ]
+  },
+  "mixins": [
+    "velocitydamage.mixins.json",
+    "velocitydamage-common.mixins.json"
+  ],
+  "depends": {
+    "fabric": "*",
+    "minecraft": ">=1.19.2",
+    "architectury": ">=6.5.85"
+  }
+}
