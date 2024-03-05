@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "io.github.kawaiicakes.velocitydamage.mixin.forge",
+  "package": "io.github.kawaiicakes.velocitydamage.mixins.forge",
   "compatibilityLevel": "JAVA_17",
   "refmap": "refmap.velocitydamage.json",
   "mixins": [
