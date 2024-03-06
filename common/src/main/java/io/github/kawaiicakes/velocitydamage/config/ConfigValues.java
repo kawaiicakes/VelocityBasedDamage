@@ -24,7 +24,7 @@ public class ConfigValues {
 
     public final boolean speedDamageBonus, momentumInheritance, damageOnAcceleration, wildMode;
     public final float velocityIncrement, exponentiationConstant, minDamagePercent,
-            maxDamagePercent, projectileMultiplier, velocityThreshold, accelerationThreshold;
+            maxDamagePercent, projectileMultiplier, accelerationThreshold;
 
     @ApiStatus.Internal
     public ConfigValues(
@@ -37,7 +37,6 @@ public class ConfigValues {
             float minDamagePercent,
             float maxDamagePercent,
             float projectileMultiplier,
-            float velocityThreshold,
             float accelerationThreshold
     ) {
         this.speedDamageBonus = speedDamageBonus;
@@ -49,7 +48,6 @@ public class ConfigValues {
         this.minDamagePercent = minDamagePercent;
         this.maxDamagePercent = maxDamagePercent;
         this.projectileMultiplier = projectileMultiplier;
-        this.velocityThreshold = velocityThreshold;
         this.accelerationThreshold = accelerationThreshold;
     }
 
