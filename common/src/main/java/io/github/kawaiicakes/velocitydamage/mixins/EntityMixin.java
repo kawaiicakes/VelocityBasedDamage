@@ -18,15 +18,15 @@ import org.spongepowered.asm.mixin.Unique;
 @Mixin(Entity.class)
 public abstract class EntityMixin implements EntityMixinAccess {
     @Unique
-    private Vec3 deltaMovementO = Vec3.ZERO;
+    private Vec3 velocitydamage$deltaMovementO = Vec3.ZERO;
 
     @Override
     public Vec3 velocitydamage$getDeltaMovementO() {
-        return this.deltaMovementO;
+        return this.velocitydamage$deltaMovementO;
     }
 
     @Override
     public void velocitydamage$setDeltaMovementO(Vec3 deltaMovementO) {
-        this.deltaMovementO = deltaMovementO;
+        this.velocitydamage$deltaMovementO = deltaMovementO;
     }
 }
