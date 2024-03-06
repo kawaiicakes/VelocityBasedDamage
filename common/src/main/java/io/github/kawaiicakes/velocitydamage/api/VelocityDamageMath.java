@@ -1,4 +1,4 @@
-package io.github.kawaiicakes.velocitydamage.math;
+package io.github.kawaiicakes.velocitydamage.api;
 
 import io.github.kawaiicakes.velocitydamage.mixins.EntityMixinAccess;
 import net.minecraft.world.entity.Entity;
