@@ -3,21 +3,28 @@ package io.github.kawaiicakes.velocitydamage.config;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import org.jetbrains.annotations.ApiStatus;
 
+/* TODO: this not a final list of config values. More should be determined, and some should be assigned dependent on
+    other values. (e.g. damageOnAcceleration is not explicitly defined in config implementations, but is true if the
+    acceleration threshold is greater than 0)
+ */
 public class ConfigValues {
     public static boolean DEFAULT_SPEED_DAMAGE_ENABLED = true;
+    public static boolean DEFAULT_MOMENTUM_INHERITANCE_ENABLED = true;
+    public static boolean DEFAULT_WILD_MODE = false;
     public static float DEFAULT_VELOCITY_INCREMENT = 6.90F;
     public static float DEFAULT_EXPONENTIATION = 1.20F;
     public static final float DEFAULT_MINIMUM_DMG = 0.40F;
     public static final float DEFAULT_MAXIMUM_DMG = Float.MAX_VALUE;
     public static final float DEFAULT_PROJECTILE_MULTIPLIER = 1.00F;
-    public static final float DEFAULT_VELOCITY_THRESHOLD = 5.8F;
+    // TODO: determine a proper value
+    public static final float DEFAULT_ACCELERATION_THRESHOLD = 9.81F;
 
     @ApiStatus.Internal
     public static ConfigValues CONFIG;
 
     public final boolean speedDamageBonus, momentumInheritance, damageOnAcceleration, wildMode;
     public final float velocityIncrement, exponentiationConstant, minDamagePercent,
-            maxDamagePercent, projectileMultiplier, velocityThreshold;
+            maxDamagePercent, projectileMultiplier, velocityThreshold, accelerationThreshold;
 
     @ApiStatus.Internal
     public ConfigValues(
@@ -30,7 +37,8 @@ public class ConfigValues {
             float minDamagePercent,
             float maxDamagePercent,
             float projectileMultiplier,
-            float velocityThreshold
+            float velocityThreshold,
+            float accelerationThreshold
     ) {
         this.speedDamageBonus = speedDamageBonus;
         this.momentumInheritance = momentumInheritance;
@@ -42,6 +50,7 @@ public class ConfigValues {
         this.maxDamagePercent = maxDamagePercent;
         this.projectileMultiplier = projectileMultiplier;
         this.velocityThreshold = velocityThreshold;
+        this.accelerationThreshold = accelerationThreshold;
     }
 
     /**
