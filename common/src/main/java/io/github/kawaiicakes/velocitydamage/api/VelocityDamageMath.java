@@ -74,7 +74,7 @@ public class VelocityDamageMath {
      */
     public static Vec3 acceleration(Entity entity) {
         // welp. let's hope I'm accessing the new method properly lol
-        Vec3 initialDeltaMovement = ((EntityMixinAccess) entity).velocitydamage$getDeltaMovementO().add(0, -RESTING_Y_DELTA, 0);
+        Vec3 initialDeltaMovement = ((EntityMixinAccess) entity).velocitydamage$getDeltaMovementO();
         Vec3 finalDeltaMovement = velocity(entity);
 
         return finalDeltaMovement.subtract(initialDeltaMovement);
