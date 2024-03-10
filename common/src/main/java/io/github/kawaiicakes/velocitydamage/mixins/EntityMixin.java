@@ -1,5 +1,6 @@
 package io.github.kawaiicakes.velocitydamage.mixins;
 
+import io.github.kawaiicakes.velocitydamage.api.EntityMixinAccess;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;

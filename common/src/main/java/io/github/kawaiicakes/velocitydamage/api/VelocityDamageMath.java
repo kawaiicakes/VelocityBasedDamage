@@ -1,6 +1,5 @@
 package io.github.kawaiicakes.velocitydamage.api;
 
-import io.github.kawaiicakes.velocitydamage.mixins.EntityMixinAccess;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
@@ -49,7 +48,7 @@ public class VelocityDamageMath {
      * of acceleration does not matter in the context in which this method is used; we are merely looking for violent
      * changes in acceleration to determine how much, if any, damage should be applied.
      * As to usage, this method theoretically works so long as it's not called before the loader-specific call to
-     * {@link io.github.kawaiicakes.velocitydamage.mixins.EntityMixinAccess#velocitydamage$setDeltaMovementO(Vec3)} is
+     * {@link EntityMixinAccess#velocitydamage$setDeltaMovementO(Vec3)} is
      * made. I'll have to be careful of that.
      * @return The approximate one-dimensional acceleration, in meters per tick per tick, of the passed
      *          <code>Entity</code> as measured over one tick.
@@ -60,7 +59,7 @@ public class VelocityDamageMath {
 
     /**
      * This method theoretically works so long as it's not called before the loader-specific call to
-     * {@link io.github.kawaiicakes.velocitydamage.mixins.EntityMixinAccess#velocitydamage$setDeltaMovementO(Vec3)} is
+     * {@link EntityMixinAccess#velocitydamage$setDeltaMovementO(Vec3)} is
      * made. I'll have to be careful of that.
      * @return The approximate acceleration vector, in meters per tick per tick, of the passed <code>Entity</code> as
      * measured over one tick.

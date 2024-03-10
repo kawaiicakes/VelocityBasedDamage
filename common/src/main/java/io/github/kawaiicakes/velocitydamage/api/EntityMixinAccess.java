@@ -1,4 +1,4 @@
-package io.github.kawaiicakes.velocitydamage.mixins;
+package io.github.kawaiicakes.velocitydamage.api;
 
 import net.minecraft.world.phys.Vec3;
 
