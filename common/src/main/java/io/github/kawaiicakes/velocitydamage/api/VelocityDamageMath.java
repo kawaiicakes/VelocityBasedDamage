@@ -15,6 +15,14 @@ public class VelocityDamageMath {
     public static final double RESTING_Y_DELTA = -0.0784000015258789;
 
     /**
+     * Returns the <code>Vec3</code> velocity of the passed <code>Entity</code>. Automatically accounts for the
+     * resting Y-delta.
+     */
+    public static Vec3 velocity(Entity entity) {
+        return entity.getDeltaMovement().add(0, -RESTING_Y_DELTA, 0);
+    }
+
+    /**
      * Positive values indicate that the attacker is approaching the target. Negative indicates that the attacker is
      * retreating from the target.
      * <br><br>
@@ -25,8 +33,8 @@ public class VelocityDamageMath {
      * @return a <code>double</code> representing a one-dimensional velocity in meters per tick.
      */
     public static double approachVelocity(Entity attacker, LivingEntity target) {
-        Vec3 attackerVelocity = attacker.getDeltaMovement().add(0, -RESTING_Y_DELTA, 0);
-        Vec3 targetVelocity = target.getDeltaMovement().add(0, -RESTING_Y_DELTA, 0);
+        Vec3 attackerVelocity = velocity(attacker);
+        Vec3 targetVelocity = velocity(target);
 
         if (attackerVelocity.length() == 0 && targetVelocity.length() == 0) return 0;
 
@@ -66,8 +74,8 @@ public class VelocityDamageMath {
      */
     public static Vec3 acceleration(Entity entity) {
         // welp. let's hope I'm accessing the new method properly lol
-        Vec3 initialDeltaMovement = ((EntityMixinAccess) entity).velocitydamage$getDeltaMovementO();
-        Vec3 finalDeltaMovement = entity.getDeltaMovement();
+        Vec3 initialDeltaMovement = ((EntityMixinAccess) entity).velocitydamage$getDeltaMovementO().add(0, -RESTING_Y_DELTA, 0);
+        Vec3 finalDeltaMovement = velocity(entity);
 
         return finalDeltaMovement.subtract(initialDeltaMovement);
     }
