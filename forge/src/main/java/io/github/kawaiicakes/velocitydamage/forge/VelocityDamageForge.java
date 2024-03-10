@@ -20,11 +20,12 @@ public class VelocityDamageForge {
         MinecraftForge.EVENT_BUS.register(VelocityDamageForge.class);
     }
 
+    // Testing purposes only
     @SubscribeEvent
     public static void onRavagerTick(LivingEvent.LivingTickEvent event) {
         if (!(event.getEntity() instanceof Ravager ravageHer)) return;
         // I hardly know her!
 
-        LOGGER.info("Ravager absolute acceleration (m/t): {}", VelocityDamageMath.accelerationAbs(ravageHer));
+        LOGGER.info("Ravager absolute acceleration (m/t^2): {}", VelocityDamageMath.accelerationAbs(ravageHer));
     }
 }

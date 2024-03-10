@@ -2,9 +2,12 @@ package io.github.kawaiicakes.velocitydamage.mixins;
 
 import io.github.kawaiicakes.velocitydamage.api.EntityMixinAccess;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
 /**
  * This mixin adds a single field, <code>deltaMovementO</code>, to all <code>Entity</code> instances, as well as a
@@ -29,5 +32,11 @@ public abstract class EntityMixin implements EntityMixinAccess {
     @Override
     public void velocitydamage$setDeltaMovementO(Vec3 deltaMovementO) {
         this.velocitydamage$deltaMovementO = deltaMovementO;
+    }
+
+    @Redirect(method = "move", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;setDeltaMovement(Lnet/minecraft/world/phys/Vec3;)V"))
+    public void setDeltaMovementRedirect(Entity instance, Vec3 motion) {
+        ((EntityMixinAccess) instance).velocitydamage$setDeltaMovementO(instance.getDeltaMovement());
+        instance.setDeltaMovement(motion);
     }
 }
