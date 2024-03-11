@@ -1,20 +1,45 @@
 package io.github.kawaiicakes.velocitydamage.forge;
 
+import com.google.common.hash.Hashing;
+import com.google.common.hash.HashingOutputStream;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.stream.JsonWriter;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.logging.LogUtils;
 import io.github.kawaiicakes.velocitydamage.VelocityDamage;
+import net.minecraft.FileUtil;
+import net.minecraft.ResourceLocationException;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
+import net.minecraftforge.client.gui.overlay.ForgeGui;
+import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.loading.FMLPaths;
 import org.slf4j.Logger;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+
+import static net.minecraft.data.DataProvider.KEY_COMPARATOR;
 
 @Mod(VelocityDamage.MOD_ID)
 public class VelocityDamageForge {
@@ -39,7 +64,6 @@ public class VelocityDamageForge {
         MinecraftForge.EVENT_BUS.register(VelocityDamageForge.class);
     }
 
-    // TODO: display tick # on screen (odd for start of tick, even for end of tick)
     // Testing purposes only
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
@@ -63,10 +87,11 @@ public class VelocityDamageForge {
     }
 
     // TESTING ONLY
-    // TODO: save data to json
     @SubscribeEvent
     public static void onPlayerInteractBlock(PlayerInteractEvent.RightClickBlock event) {
         if (!event.getSide().equals(LogicalSide.CLIENT)) return;
+
+        if (STOP_LOGGING) return;
 
         STOP_LOGGING = true;
 
@@ -103,6 +128,82 @@ public class VelocityDamageForge {
         for (Vec3 vector : DELTA_MOVEMENT) {
             deltaPos.add(vector.toString());
             deltaPosAbs.add(vector.length());
+        }
+
+        JsonObject jsonData = new JsonObject();
+        jsonData.add("xO", xO);
+        jsonData.add("yO", yO);
+        jsonData.add("zO", zO);
+        jsonData.add("xOld", xOld);
+        jsonData.add("yOld", yOld);
+        jsonData.add("zOld", zOld);
+        jsonData.add("pos", pos);
+        jsonData.add("deltaPos", deltaPos);
+        jsonData.add("deltaPosAbs", deltaPosAbs);
+
+        Path jsonFileParentPath = FMLPaths.GAMEDIR.relative().resolve("logs").resolve("velocitydamage");
+
+        String jsonFileName = "kinematics_data.json";
+
+        Path jsonFilePath;
+
+        try {
+            jsonFilePath = FileUtil.createPathToResource(jsonFileParentPath, "kinematics_data", ".json");
+
+            if (!jsonFilePath.startsWith(jsonFileParentPath) || !FileUtil.isPathNormalized(jsonFilePath) || !FileUtil.isPathPortable(jsonFilePath))
+                throw new ResourceLocationException("Invalid resource path: " + jsonFilePath);
+        } catch (InvalidPathException invalidpathexception) {
+            LOGGER.error("Invalid resource path: {}", jsonFileName);
+            return;
+        }
+
+        try {
+            Files.createDirectories(Files.exists(jsonFileParentPath) ? jsonFileParentPath.toRealPath() : jsonFileParentPath);
+        } catch (IOException ioexception) {
+            LOGGER.error("Failed to create parent directory: {}", jsonFileParentPath);
+            return;
+        }
+
+        try {
+            ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+            // ignoring deprecation here because SHA-1 interoperability is desired (probably? lol)
+            //noinspection UnstableApiUsage,deprecation
+            HashingOutputStream hashOutput = new HashingOutputStream(Hashing.sha1(), byteOutput);
+
+            Writer writer = new OutputStreamWriter(hashOutput, StandardCharsets.UTF_8);
+            JsonWriter jsonWriter = new JsonWriter(writer);
+            jsonWriter.setSerializeNulls(false);
+            jsonWriter.setIndent("  ");
+            GsonHelper.writeValue(jsonWriter, jsonData, KEY_COMPARATOR);
+            jsonWriter.close();
+            try {
+                Files.write(jsonFilePath, byteOutput.toByteArray());
+            } catch (Throwable e) {
+                try {
+                    byteOutput.close();
+                } catch (Throwable throwable) {
+                    e.addSuppressed(throwable);
+                }
+
+                throw e;
+            }
+
+            byteOutput.close();
+        } catch (Throwable e2) {
+            LOGGER.error("Error while saving!", e2);
+        }
+    }
+
+    // DEBUG ONLY
+    @Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+    public static class ClientEvents {
+        public static final IGuiOverlay DEBUGGER = (((forgeGui, arg, f, i, j) -> {
+            GuiComponent.drawCenteredString(arg, Minecraft.getInstance().font, String.valueOf(TICK), i/2, j/2, 0xFFFF00);
+        }));
+
+        @SubscribeEvent
+        public static void registerGui(RegisterGuiOverlaysEvent event) {
+            event.registerBelowAll("temp_shit", DEBUGGER);
         }
     }
 }
