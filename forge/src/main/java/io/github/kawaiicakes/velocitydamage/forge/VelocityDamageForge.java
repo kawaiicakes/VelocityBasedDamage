@@ -13,6 +13,7 @@ import net.minecraft.ResourceLocationException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
@@ -62,6 +63,17 @@ public class VelocityDamageForge {
         VelocityDamage.init();
 
         MinecraftForge.EVENT_BUS.register(VelocityDamageForge.class);
+    }
+
+    // this one seems accurate
+    // TESTING ONLY
+    @SubscribeEvent
+    public static void onServerTick(TickEvent.ServerTickEvent event) {
+        if (!event.phase.equals(TickEvent.Phase.START)) return;
+
+        ServerPlayer playHer = event.getServer().getPlayerList().getPlayerByName("Dev");
+        if (playHer == null) return;
+        LOGGER.info("ServerPlayer velocity: {}", playHer.position().z - playHer.zOld);
     }
 
     // Testing purposes only
