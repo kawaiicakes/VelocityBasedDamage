@@ -5,9 +5,12 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
  * This mixin adds a single field, <code>deltaMovementO</code>, to all <code>Entity</code> instances, as well as a
@@ -23,6 +26,9 @@ import org.spongepowered.asm.mixin.injection.Redirect;
  */
 @Mixin(Entity.class)
 public abstract class EntityMixin implements EntityMixinAccess {
+    @Shadow
+    private Vec3 deltaMovement;
+
     @Unique
     private Vec3 velocitydamage$deltaMovementO = Vec3.ZERO;
 
@@ -36,9 +42,8 @@ public abstract class EntityMixin implements EntityMixinAccess {
         this.velocitydamage$deltaMovementO = deltaMovementO;
     }
 
-    @Redirect(method = "move", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;setDeltaMovement(Lnet/minecraft/world/phys/Vec3;)V"))
-    public void setDeltaMovementRedirect(Entity instance, Vec3 motion) {
-        ((EntityMixinAccess) instance).velocitydamage$setDeltaMovementO(instance.getDeltaMovement());
-        instance.setDeltaMovement(motion);
+    @Inject(method = "setDeltaMovement(Lnet/minecraft/world/phys/Vec3;)V", at = @At(value = "HEAD"))
+    public void setDeltaMovement(Vec3 motion, CallbackInfo ci) {
+        this.velocitydamage$setDeltaMovementO(this.deltaMovement);
     }
 }
