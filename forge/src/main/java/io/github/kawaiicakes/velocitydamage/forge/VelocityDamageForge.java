@@ -5,23 +5,23 @@ import com.google.common.hash.HashingOutputStream;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonWriter;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.logging.LogUtils;
 import io.github.kawaiicakes.velocitydamage.VelocityDamage;
+import io.github.kawaiicakes.velocitydamage.api.EntityMixinAccess;
+import io.github.kawaiicakes.velocitydamage.api.VelocityDamageMath;
 import net.minecraft.FileUtil;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.Ravager;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
-import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
@@ -54,6 +54,7 @@ public class VelocityDamageForge {
     private static final List<Double> Z_OLD = new ArrayList<>();
     private static final List<Vec3> POSITION = new ArrayList<>();
     private static final List<Vec3> DELTA_MOVEMENT = new ArrayList<>();
+    private static final List<Vec3> DELTA_MOVEMENT_OLD = new ArrayList<>();
 
     private static boolean STOP_LOGGING = false;
 
@@ -68,20 +69,9 @@ public class VelocityDamageForge {
     // this one seems accurate
     // TESTING ONLY
     @SubscribeEvent
-    public static void onServerTick(TickEvent.ServerTickEvent event) {
-        if (!event.phase.equals(TickEvent.Phase.START)) return;
-
-        ServerPlayer playHer = event.getServer().getPlayerList().getPlayerByName("Dev");
-        if (playHer == null) return;
-        LOGGER.info("ServerPlayer velocity: {}", playHer.position().z - playHer.zOld);
-    }
-
-    // Testing purposes only
-    @SubscribeEvent
-    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (STOP_LOGGING) return;
-        if (!(event.player instanceof LocalPlayer playHer)) return;
-        // I hardly know her!
+    public static void onRavagerTick(LivingEvent.LivingTickEvent event) {
+        LivingEntity playHer = event.getEntity();
+        if (!(playHer instanceof Ravager)) return;
 
         TICK++;
 
@@ -96,6 +86,13 @@ public class VelocityDamageForge {
         POSITION.add(playHer.position());
 
         DELTA_MOVEMENT.add(playHer.getDeltaMovement());
+        DELTA_MOVEMENT_OLD.add(((EntityMixinAccess) playHer).velocitydamage$getDeltaMovementO());
+
+        // FIXME: velocity is always 0. Are the positions always the same on the server? 
+
+        LOGGER.info("METERS PER SECOND BELOW");
+        LOGGER.info("Ravager velocity: {}", (playHer.position().z - playHer.zOld) * 20D);
+        LOGGER.info("Ravager acceleration: {}", VelocityDamageMath.accelerationAbs(playHer) * 20D);
     }
 
     // TESTING ONLY
