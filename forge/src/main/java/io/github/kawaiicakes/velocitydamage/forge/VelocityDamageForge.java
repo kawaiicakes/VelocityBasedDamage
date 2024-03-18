@@ -88,10 +88,10 @@ public class VelocityDamageForge {
         DELTA_MOVEMENT.add(playHer.getDeltaMovement());
         DELTA_MOVEMENT_OLD.add(((EntityMixinAccess) playHer).velocitydamage$getDeltaMovementO());
 
-        // FIXME: velocity is always 0. Are the positions always the same on the server? 
+        // FIXME: velocity is always 0. Are the positions always the same on the server?
 
         LOGGER.info("METERS PER SECOND BELOW");
-        LOGGER.info("Ravager velocity: {}", (playHer.position().z - playHer.zOld) * 20D);
+        LOGGER.info("Ravager velocity: {}", (VelocityDamageMath.velocity(playHer)).length() * 20D);
         LOGGER.info("Ravager acceleration: {}", VelocityDamageMath.accelerationAbs(playHer) * 20D);
     }
 
