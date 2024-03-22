@@ -8,6 +8,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import org.slf4j.Logger;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -22,6 +24,7 @@ public abstract class LivingEntityMixin extends Entity {
     @Shadow
     public abstract boolean isFallFlying();
 
+    @Shadow @Final private static Logger LOGGER;
     @Unique
     private Vec3 velocitydamage$movementDeltaPseudoLocal;
 
@@ -37,13 +40,13 @@ public abstract class LivingEntityMixin extends Entity {
     @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;aiStep()V", shift = At.Shift.AFTER))
     private void checkCollisionDamage(CallbackInfo ci) {
         if (ConfigValues.getInstance().damageOnAcceleration) {
-            // FIXME: damage calculation is missing a lot of the locals necessary for accurate values.
             // FIXME: collision damage w/ elytra may still be doubled up here
-            // this might actually be fine if the local float damage is doing what I think it is. I could just tweak some values around and then implement functionality for ServerPlayers
-            float damage = (float) (((this.velocitydamage$movementDeltaPseudoLocal.horizontalDistance() - this.getDeltaMovement().horizontalDistance()) * 10.0F) - 3.0F);
-            if (!this.isFallFlying() && this.horizontalCollision && !this.level.isClientSide && damage > 0.0F) {
-                this.playSound(PLAYER_ATTACK_CRIT, Mth.clamp(damage, 1.0F, 5.0F), 0.7f);
-                this.hurt(DamageSource.FLY_INTO_WALL, damage);
+            float rawDamage = (float) (((this.velocitydamage$movementDeltaPseudoLocal.horizontalDistance() - this.getDeltaMovement().horizontalDistance()) * 10.0F) - 3.0F);
+            float correctedDamage = rawDamage - ConfigValues.getInstance().accelerationThreshold;
+            if (!this.isFallFlying() && this.horizontalCollision && !this.level.isClientSide && correctedDamage > 0.0F) {
+                LOGGER.info(String.valueOf(correctedDamage));
+                this.playSound(PLAYER_ATTACK_CRIT, Mth.clamp(correctedDamage, 0.5F, 5.0F), 0.7f);
+                this.hurt(DamageSource.FLY_INTO_WALL, correctedDamage);
             }
         }
     }

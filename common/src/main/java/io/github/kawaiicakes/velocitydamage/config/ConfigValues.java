@@ -16,8 +16,7 @@ public class ConfigValues {
     public static final float DEFAULT_MINIMUM_DMG = 0.40F;
     public static final float DEFAULT_MAXIMUM_DMG = Float.MAX_VALUE;
     public static final float DEFAULT_PROJECTILE_MULTIPLIER = 1.00F;
-    // TODO: determine a proper value
-    public static final float DEFAULT_ACCELERATION_THRESHOLD = 9.81F;
+    public static final float DEFAULT_ACCELERATION_THRESHOLD = 1.5F;
 
     @ApiStatus.Internal
     public static ConfigValues CONFIG;

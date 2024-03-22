@@ -1,11 +1,13 @@
 package io.github.kawaiicakes.velocitydamage.api;
 
+import io.github.kawaiicakes.velocitydamage.config.ConfigValues;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 
 /**
  * Utility-class containing static methods for easily calculating things related to the function of this mod.
+ * Config values are automatically taken into account, where applicable.
  */
 public class VelocityDamageMath {
 
@@ -52,31 +54,48 @@ public class VelocityDamageMath {
     }
 
     /**
-     * Looks at the absolute change in speed (not velocity) of the passed <code>Entity</code> over a tick. The direction
-     * of acceleration does not matter in the context in which this method is used; we are merely looking for violent
-     * changes in acceleration to determine how much, if any, damage should be applied.
-     * As to usage, this method theoretically works so long as it's not called before the loader-specific call to
-     * {@link EntityMixinAccess#velocitydamage$setDeltaMovementO(Vec3)} is
-     * made. I'll have to be careful of that.
-     * @return The approximate one-dimensional acceleration, in meters per tick per tick, of the passed
-     *          <code>Entity</code> as measured over one tick.
+     * @param approachVelocity  the <code>double</code> in meters per tick at which the attacking entity approaches
+     *                          (or retreats) from the target.
+     * @param originalDamage    the original damage to be conferred to the target.
+     * @return a <code>float</code> representing the new damage to apply to the attacked entity.
      */
-    public static double accelerationAbs(Entity entity) {
-        return acceleration(entity).length();
+    public static float damageOnAttack(double approachVelocity, float originalDamage) {
+        if (!isEnabled() || approachVelocity == 0.00) return originalDamage;
+
+        float arbitraryVelocity = (float) (Math.abs(approachVelocity) / velocityIncrement());
+        float multiplier = (float) (Math.pow(arbitraryVelocity, exponentiationConstant()) / 2F);
+        float percentageBonus = originalDamage * multiplier;
+
+        if (approachVelocity < 0.00) {
+            float minDamage = originalDamage * minDamagePercent();
+            return Math.max(minDamage, originalDamage - percentageBonus);
+        }
+
+        float maxDamage = originalDamage * maxDamagePercent();
+        return Math.min(maxDamage, originalDamage + percentageBonus);
     }
 
-    /**
-     * This method theoretically works so long as it's not called before the loader-specific call to
-     * {@link EntityMixinAccess#velocitydamage$setDeltaMovementO(Vec3)} is
-     * made. I'll have to be careful of that.
-     * @return The approximate acceleration vector, in meters per tick per tick, of the passed <code>Entity</code> as
-     * measured over one tick.
+    /*
+        HELPER METHODS BELOW
      */
-    public static Vec3 acceleration(Entity entity) {
-        // welp. let's hope I'm accessing the new method properly lol
-        Vec3 initialDeltaMovement = ((EntityMixinAccess) entity).velocitydamage$getDeltaMovementO();
-        Vec3 finalDeltaMovement = velocity(entity);
 
-        return finalDeltaMovement.subtract(initialDeltaMovement);
+    private static boolean isEnabled() {
+        return ConfigValues.getInstance().speedDamageBonus;
+    }
+
+    private static float velocityIncrement() {
+        return ConfigValues.getInstance().velocityIncrement;
+    }
+
+    private static float exponentiationConstant() {
+        return ConfigValues.getInstance().exponentiationConstant;
+    }
+
+    private static float minDamagePercent() {
+        return ConfigValues.getInstance().minDamagePercent;
+    }
+
+    private static float maxDamagePercent() {
+        return ConfigValues.getInstance().maxDamagePercent;
     }
 }
